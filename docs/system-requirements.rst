@@ -38,7 +38,7 @@ Instructions for use:
 1. Backup your previous `/etc/foreman-installer/custom-hiera.yaml` to `custom-hiera.original`.
 2. Copy file that matches RAM on your Satellite to `/etc/foreman-installer/custom-hiera.yaml`.
 3. If you had settings previously added in `custom-hiera.original` that do not exist in the copied `custom-hiera.yaml`, you may need to re-add them to the copied file.
-4. Take care to preserve values added by the upgrade process such as:
+4. Take care to preserve values added by the upgrade process such as::
 
     # Added by foreman-installer during upgrade, run the installer with --upgrade-mongo-storage to upgrade to WiredTiger.
     mongodb::server::storage_engine: 'mmapv1'
