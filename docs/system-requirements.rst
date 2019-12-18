@@ -14,7 +14,7 @@ In short, you need to edit `/etc/foreman-installer/custom-hiera.yaml` file and t
 Quick Tuning Guide
 ==================
 
-Users who wish to tune their Satellite based on expected managed host counts and hardware allocation can utilize the `custom-heira.yaml` tuning files we provide publicly on the Red Hat Satellite github repository here:
+Users who wish to tune their Satellite based on expected managed host counts and hardware allocation can utilize the `custom-heira.yaml` tuning files we provide publicly on the Red Hat Satellite GitHub repository here:
 https://github.com/RedHatSatellite/satellite-support/tree/master/tuning-profiles
 
 There are 4 custom sizes provided based on estimates of the number of managed hosts your Satellite will be hosting.
