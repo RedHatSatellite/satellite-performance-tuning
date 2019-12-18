@@ -19,7 +19,7 @@
 
 project = 'Satellite 6 Performance Tuning Guide'
 copyright = '2019, Red Hat'
-author = 'Pradeep Surisetty'
+author = 'Red Hat Performance Engineering'
 
 
 # -- General configuration ---------------------------------------------------
