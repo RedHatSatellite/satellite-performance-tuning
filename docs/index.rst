@@ -11,6 +11,7 @@ Satellite 6.5 and 6.6 Performance Tuning Guide
    introduction
    system-requirements
    top-performance-considerations
+   configuring-environment
 
 
 

@@ -1,15 +1,21 @@
 candlepin
+directio
 Dynflow
+filesystems
+fio
 hiera
 httpd
 Hutar
 Imaanpreet
+iSCSI
 JBoss
+jitter
 Joyent
 js
 katello
 Kaur
 licensor
+mem
 Pradeep
 Puch
 qdrouterd
@@ -21,4 +27,5 @@ Surisetty
 Thirugnanasambandan
 tunings
 Unported
+whitelist
 yaml
