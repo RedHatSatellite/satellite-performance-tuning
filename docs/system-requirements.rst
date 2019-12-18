@@ -42,4 +42,5 @@ Instructions for use:
 
     # Added by foreman-installer during upgrade, run the installer with --upgrade-mongo-storage to upgrade to WiredTiger.
     mongodb::server::storage_engine: 'mmapv1'
-    run 'satellite-installer' with no arguments to apply these settings.
+
+5. Run `satellite-installer` with no arguments to apply these settings.
