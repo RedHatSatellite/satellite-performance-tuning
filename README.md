@@ -12,6 +12,7 @@ Setup your environment:
     virtualenv venv
     source venv/bin/activate
     pip install -r requirements.txt
+    dnf install latexmk -y 
 
 After changes, check spelling (use `spelling_wordlist.txt` to whitelist):
 
@@ -21,6 +22,10 @@ Build PDF:
 
     make -C docs/ latexpdf
     xpdf docs/_build/latex/satellite6performancetunningguide.pdf
+
+View PDF: 
+    cd satellite6-performance-tuning/docs/_build/latex 
+    evince <file.pdf>
 
 Cleanup workdir:
 

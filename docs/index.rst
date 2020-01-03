@@ -12,12 +12,7 @@ Satellite 6.5 and 6.6 Performance Tuning Guide
    system-requirements
    top-performance-considerations
    configuring-environment
+   satellite-configuration-tuning
 
 
 
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
