@@ -24,6 +24,7 @@ Build PDF:
     xpdf docs/_build/latex/satellite6performancetunningguide.pdf
 
 View PDF: 
+
     cd satellite6-performance-tuning/docs/_build/latex 
     evince <file.pdf>
 
