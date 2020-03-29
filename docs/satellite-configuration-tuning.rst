@@ -169,25 +169,17 @@ PassengerMinInstances: The configuration key tells how many application instance
 Dynflow Tuning
 ==============
 
-Dynflow is the workflow management system and task orchestrator which is built as a plugin inside Foreman and is used to execute the different tasks of Satellite in an out-of-order execution manner. Under the conditions when there are a lot of clients checking in on Satellite and running a number of tasks, the Dynflow can take some help from added tunings which involves setting how many executors can it launch, how it handles the memory usage of the executors, etc.
+Dynflow is the workflow management system and task orchestrator which is built as a plugin inside Foreman and is used to execute the different tasks of Satellite in an out-of-order execution manner. Under the conditions when there are a lot of clients checking in on Satellite and running a number of tasks, the Dynflow can take some help from an added tuning specifying how many executors can it launch.
 
 The following configuration snippet provides more information about the tunings involved related to Dynflow::
 
   File: /etc/sysconfig/dynflowd:
 
   EXECUTORS_COUNT=2
-  EXECUTOR_MEMORY_LIMIT=3gb
-  EXECUTOR_MEMORY_MONITOR_DELAY=1800
-  EXECUTOR_MEMORY_MONITOR_INTERVAL=120
 
-In the above tuning example, we worked with 4 configuration keys:
+In the above tuning example, we worked with one configuration key:
 
 EXECUTORS_COUNT: The key is used to configure how many executors will be launched by the Dynflow to handle the workflow management and task orchestration jobs. Usually an optimal value for this is in the range of 1-5 with diminishing gains if taken beyond that. Some of the tasks which may see an improvement over with the increased executor count is the ability to handle more number of concurrent package reporting from the content hosts.
-
-EXECUTOR_MEMORY_LIMIT: The key defines the maximum amount of memory that can be used by an executor before it is recycled. An optimal value for this will be in the range of 2-3 GB depending upon the amount of resources your system has.
-EXECUTOR_MEMORY_MONITOR_DELAY: The key defines the time before the first memory usage polling takes place after an executor has launched. The value for this is provided in number of seconds and should be kept between 1800 to 3600 seconds for keeping the memory usage of Dynflow in check.
-
-EXECUTOR_MEMORY_MONITOR_INTERVAL: The key defines how frequently the memory usage of an executor should be monitored so as to recycle it once it has crossed the threshold value for the memory usage.
 
 PostgreSQL Tuning
 =================
