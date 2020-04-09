@@ -18,7 +18,7 @@
 # -- Project information -----------------------------------------------------
 
 project = 'Satellite 6 Performance Tuning Guide'
-copyright = '2019, Red Hat'
+copyright = '2020, Red Hat'
 author = 'Red Hat Performance Engineering'
 
 
