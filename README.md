@@ -13,6 +13,7 @@ Setup your environment:
     source venv/bin/activate
     pip install -r requirements.txt
     dnf install latexmk -y 
+    dnf install xpdf -y # to install the command for pdf viewer
 
 After changes, check spelling (use `spelling_wordlist.txt` to whitelist):
 
