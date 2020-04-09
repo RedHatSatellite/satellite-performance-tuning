@@ -7,7 +7,7 @@ For details of Red Hat Satellite 6 hardware and software requirements, please ta
 Using custom-hiera.yaml
 =======================
 
-Whenever you need to permanently change the default configuration of some of Satellite’s services, prefer changing satellite-installer configuration above changing services configuration files, because these changes would be overwritten on next satellite-installer run (e.g. because of upgrade). More details on how to do that properly can be found in Applying Custom Configuration to Red Hat Satellite 6.5 appendix of Installer Guide.
+Whenever you need to permanently change the default configuration of some of Satellite’s services, prefer changing satellite-installer configuration above changing services configuration files, because these changes would be overwritten on next satellite-installer run (e.g. because of upgrade). More details on how to do that properly can be found in Applying Custom Configuration to Red Hat Satellite 6 appendix of Installer  `Guide <https://access.redhat.com/documentation/en-us/red_hat_satellite/6.7-beta/html/installing_satellite_server_from_a_connected_network/applying_custom_configuration_to_red_hat_satellite>`_.
 
 In short, you need to edit `/etc/foreman-installer/custom-hiera.yaml` file and then run `satellite-installer` command. Note that you have to first test changes in non-production environment.
 
