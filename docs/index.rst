@@ -1,4 +1,4 @@
-Satellite 6.5 and 6.6 Performance Tuning Guide
+Satellite 6.7 Performance Tuning Guide
 ==============================================
 
 .. toctree::
