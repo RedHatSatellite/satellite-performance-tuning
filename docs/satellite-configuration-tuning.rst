@@ -229,11 +229,11 @@ Note:
 MongoDb Tuning
 ==============
 
-Sometimes,mongod consumes randomly high memory (up to 1/2 of all RAM) and this aggressive memory usage limits other processes or can cause OOM killers to kill mongod. In order to overcome this situation, tune the cache size by referring the following steps:
+mongod consumes randomly high memory (up to 1/2 of all RAM) and this aggressive memory usage limits other processes or can cause OOM killers to kill mongod. In order to overcome this situation, tune the cache size by referring the following steps:
 
 Update custom-hiera.yaml:
 
--  Edit /etc/foreman-installer/custom-hiera.yaml and add the entry below inserting the value that is 20% of the physical RAM, in this case, approximately 10GB for a 48GB server::
+-  Edit /etc/foreman-installer/custom-hiera.yaml and add the entry below inserting the value that is 20% of the physical RAM while keeping in mind the _`guidlines <https://access.redhat.com/documentation/en-us/red_hat_satellite/6.7-beta/html/installing_satellite_server_from_a_connected_network/preparing_your_environment_for_installation#hardware_storage_prerequisites`_, in this case, approximately 10GB for a 48GB server::
 
   mongodb::server::config_data:
    storage.wiredTiger.engineConfig.cacheSizeGB: 10
