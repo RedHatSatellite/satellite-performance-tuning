@@ -8,12 +8,10 @@ Contribute
 
 Setup your environment:
 
-    dnf install python-sphinx-latex   # to install all dependencies
+    sudo dnf -y install python-sphinx-latex latexmk xpdf # to install all dependencies
     virtualenv venv
     source venv/bin/activate
     pip install -r requirements.txt
-    dnf install latexmk -y 
-    dnf install xpdf -y # to install the command for pdf viewer
 
 After changes, check spelling (use `spelling_wordlist.txt` to whitelist):
 
