@@ -15,7 +15,7 @@ Quick Tuning Guide
 ==================
 
 Users who wish to tune their Satellite based on expected managed host counts and hardware allocation can utilize the `custom-heira.yaml` tuning files we provide publicly on the Red Hat Satellite GitHub repository here:
-https://github.com/RedHatSatellite/satellite-support/tree/master/tuning-profiles
+https://access.redhat.com/documentation/en-us/red_hat_satellite/6.7/html/installing_satellite_server_from_a_connected_network/performing_additional_configuration_on_satellite_server#tuning-satellite-server-with-predefined-profiles
 
 There are 4 custom sizes provided based on estimates of the number of managed hosts your Satellite will be hosting.
 
