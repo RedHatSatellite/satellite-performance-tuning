@@ -112,7 +112,9 @@ Note The change must be applied via::
 Maximum asynchronous input-output (AIO) requests
 ================================================
 
-Increase the maximum number of allowable concurrent AIO requests by increasing the kernel parameter fs.aio-max-nr.1. Edit configuration file /etc/sysctl.conf, setting the value of fs.aio-max-nr to the desired maximum.
+Increase the maximum number of allowable concurrent AIO requests by increasing the kernel parameter `fs.aio-max-nr`.
+
+Edit configuration file `/etc/sysctl.conf`, setting the value of `fs.aio-max-nr` to the desired maximum.
 
   fs.aio-max-nr=23456
 
