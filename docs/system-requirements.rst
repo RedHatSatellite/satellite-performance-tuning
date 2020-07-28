@@ -7,7 +7,7 @@ For details of Red Hat Satellite 6 hardware and software requirements, please ta
 Quick Tuning Guide
 ==================
 
-Users who wish to tune their Satellite based on expected managed host counts and hardware allocation can utilize the built in tuning profiles included in Satellite 6.7 and later that are available via the installation routine's new tuning flag::
+Users who wish to tune their Satellite based on expected managed host counts and hardware allocation can utilize the built in tuning profiles included in Satellite 6.7 and later that are available via the installation routine's new tuning flag (see `information in installation guide <https://access.redhat.com/documentation/en-us/red_hat_satellite/6.7/html/installing_satellite_server_from_a_connected_network/performing-additional-configuration#tuning-satellite-server-with-predefined-profiles_satellite>`_)::
 
   # satellite-installer --help
   Usage:
