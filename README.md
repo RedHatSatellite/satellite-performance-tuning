@@ -20,7 +20,7 @@ After changes, check spelling (use `spelling_wordlist.txt` to whitelist):
 Build PDF:
 
     make -C docs/ latexpdf
-    xpdf docs/_build/latex/satellite6performancetunningguide.pdf
+    xpdf docs/_build/latex/satellite6performancetuningguide.pdf
 
 View PDF: 
 
