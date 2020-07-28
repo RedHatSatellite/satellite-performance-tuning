@@ -54,7 +54,7 @@ Note: While accounting for the limits to be set for the ServerLimit, please take
 
 For example, an adequate value for ServerLimit on a Satellite 6.5 configuration that has PassengerMaxPoolSize set to 24, PassengerMaxRequestQueueSize set to 400 and expecting to register 150 content hosts in parallel with pulp configuration not being modified, can be calculated as shown below:
 
-        ServerLimit = 24 + 400 + 150 + 8 = 582
+  ServerLimit = 24 + 400 + 150 + 8 = 582
 
 Increasing the MaxOpenFiles Limit
 =================================
@@ -66,6 +66,7 @@ With the tuning in place, apache httpd can easily open a lot of file descriptors
   LimitNOFILE=640000
 
 Once the file has been edited, the following commands need to be run to make the tunings come into effect::
+
   systemctl daemon-reload
   foreman-maintain service restart
 
