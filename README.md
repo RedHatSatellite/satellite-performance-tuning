@@ -20,12 +20,10 @@ After changes, check spelling (use `spelling_wordlist.txt` to whitelist):
 Build PDF:
 
     make -C docs/ latexpdf
+
+View PDF:
+
     xpdf docs/_build/latex/satellite6performancetuningguide.pdf
-
-View PDF: 
-
-    cd satellite6-performance-tuning/docs/_build/latex 
-    evince <file.pdf>
 
 Cleanup workdir:
 
