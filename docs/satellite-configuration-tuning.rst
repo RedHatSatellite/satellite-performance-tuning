@@ -1,15 +1,15 @@
-===================
+==============================
 Satellite Configuration Tuning
-===================
+==============================
 
 Red Hat Satellite as a product comes with a number of components that communicate with each other to produce a final outcome. All these components can be tuned independently of each other to achieve the maximum possible performance for the scenario desired.
 
-Tuned profile 
+Tuned profile
 =============
 
 Red Hat Enterprise Linux 7 enables the tuned daemon by default during installation.  On bare-metal, it is recommended that Red Hat Satellite 6 and capsule servers run the ‘throughput-performance’ tuned profile. While, if virtualized, they should run the ‘virtual-guest’ profile. If it is not certain the system is currently running the correct profile, check with the ‘tuned-adm active’ command as shown above. More information about tuned is located in the Red Hat Enterprise Linux Performance Tuning Guide::
 
-  # service tuned start 
+  # service tuned start
   # chkconfig tuned on
   RHEL 7 (bare-metal):
   # tuned-adm profile throughput-performance
@@ -264,13 +264,3 @@ Depending on a disk drive type, file system choice (ext4 or xfs) for MongoDB sto
 Note:
 
  - Never do any testing on production system and without valid backup.
-
-
-~                                      
-
-
-                                      
-
-
-
-
