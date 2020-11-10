@@ -174,15 +174,7 @@ Dynflow Tuning
 
 Dynflow is the workflow management system and task orchestrator which is built as a plugin inside Foreman and is used to execute the different tasks of Satellite in an out-of-order execution manner. Under the conditions when there are a lot of clients checking in on Satellite and running a number of tasks, the Dynflow can take some help from an added tuning specifying how many executors can it launch.
 
-The following configuration snippet provides more information about the tunings involved related to Dynflow::
-
-  File: /etc/sysconfig/dynflowd:
-
-  EXECUTORS_COUNT=2
-
-In the above tuning example, we worked with one configuration key:
-
-EXECUTORS_COUNT: The key is used to configure how many executors will be launched by the Dynflow to handle the workflow management and task orchestration jobs. Usually an optimal value for this is in the range of 1-5 with diminishing gains if taken beyond that. Some of the tasks which may see an improvement over with the increased executor count is the ability to handle more number of concurrent package reporting from the content hosts.
+In Satellite 6.8, Dynflow configuration has been changed as how this is configured entirely and we are working on a new dynflow configuration. Soon, will release a new version of the performance brief with new dynflow configuration. See these `examples <https://gist.github.com/adamruzicka/1991892ce22b18e030f9a4db95406319>`_ for more details. 
 
 PostgreSQL Tuning
 =================
@@ -196,7 +188,6 @@ The below set of tunings can be applied to PostgreSQL to improve its response ti
     max_connections: 1000
     shared_buffers: 2GB
     work_mem: 8MB
-    checkpoint_segments: 32
     autovacuum_vacuum_cost_limit: 2000
 
 In the above tuning configuration, there are a certain set of keys which we have altered:
@@ -207,9 +198,9 @@ shared_buffers: The shared buffers define the memory used by all the active conn
 
 work_mem: The work_mem is the memory that is allocated on per process basis for Postgresql and is used to store the intermediate results of the operations that are being performed by the process. Setting this value to 8 MB should be more than enough for most of the intensive operations on Satellite.
 
-checkpoint_segments: The key defines the threshold after which the database should flush the contents WAL. Every segment is usually of 16 MB in size and the total checkpoint size is defined by checkpoint_segments multiplied by 16 MB. Once this much amount of WAL logs are filled, a checkpoint occurs flushing the contents of the WAL to storage.
-
 autovacuum_vacuum_cost_limit: The key defines the cost limit value for the vacuuming operation inside the autovacuum process to clean up the dead tuples inside the database relations. The cost limit defines the number of tuples that can be processed in a single run by the process. An optimal value for this is 2000 based on the general load that Satellite pushes on the PostgreSQL server process.
+
+Note - With the upgrade to Postgres 12, ‘checkpoint_segments’ configuration is not supported. For more details, please refer to this `bugzilla <https://bugzilla.redhat.com/show_bug.cgi?id=1867311#c12>`_ . 
 
 Benchmarking raw DB performance
 ===============================

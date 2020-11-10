@@ -2,12 +2,12 @@
 System Requirements
 ===================
 
-For details of Red Hat Satellite 6 hardware and software requirements, please take a look at Preparing your environment for installation, inside the installation guide.
+For details of Red Hat Satellite 6 hardware and software requirements, please take a look at `Preparing your environment for installation <https://access.redhat.com/documentation/en-us/red_hat_satellite/6.8/html/installing_satellite_server_from_a_connected_network/preparing-environment-for-satellite-installation#system-requirements_satellite>`_, inside the installation guide.
 
 Quick Tuning Guide
 ==================
 
-Users who wish to tune their Satellite based on expected managed host counts and hardware allocation can utilize the built in tuning profiles included in Satellite 6.7 and later that are available via the installation routine's new tuning flag (see `information in installation guide <https://access.redhat.com/documentation/en-us/red_hat_satellite/6.7/html/installing_satellite_server_from_a_connected_network/performing-additional-configuration#tuning-satellite-server-with-predefined-profiles_satellite>`_)::
+Users who wish to tune their Satellite based on expected managed host counts and hardware allocation can utilize the built in tuning profiles included in Satellite 6.8 and later that are available via the installation routine's new tuning flag (see `information in installation guide <https://github.com/RedHatSatellite/satellite-support/tree/master/tuning-profiles>`_)::
 
   # satellite-installer --help
   Usage:
