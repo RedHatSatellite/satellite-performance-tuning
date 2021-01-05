@@ -37,7 +37,7 @@ There are 4 sizes provided based on estimates of the number of managed hosts you
 Instructions for use:
 
 1. Determine the profile you wish to use
-2. Run `satellite-installer --tuning large`. This will apply the chose tuning profile.
+2. Run `satellite-installer --tuning large`. This will apply to the chosen tuning profile.
 3. Resume operations
 
 NOTE: The specific tuning settings for each profile can be viewed in the configuration files contained in `/usr/share/foreman-installer/config/foreman.hiera/tuning/sizes`
