@@ -160,15 +160,6 @@ PassengerMaxPoolSize: The parameter defines how many ruby application instances 
 
 PassengerMaxRequestQueueSize: The PassengerMaxRequestQueueSize parameter defines how many requests can passenger queue for processing. The value for this parameter should never exceed the value of ServerLimit parameter set for the Apache httpd2.
 
-Foreman Tuning
-==============
-
-Foreman is the central application which provides the majority of the Satellite functionality as well as the GUI of Satellite. Under heavy load, the Foreman might need some amount of scaling up so as to provide adequate response times to the incoming requests.
-
-Installer option “--foreman-passenger-min-instances 12” (defaults to 1) can be used to tune Foreman application (that will set “PassengerMinInstances” in /etc/httpd/conf.d/05-foreman-ssl.conf file).
-
-PassengerMinInstances: The configuration key tells how many application instances should be running every time even when no load is being experienced by the application. To calculate an optimal value for the configuration key, divide the value of PassengerMaxPoolSize by 2. One of the repercussions that may be seen with such a tuning is the increased memory usage on the system attributed to the fact of having more foreman instances running during ideal conditions.
-
 Dynflow Tuning
 ==============
 
