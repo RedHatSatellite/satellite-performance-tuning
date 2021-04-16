@@ -26,6 +26,7 @@ mem
 mongod
 PassengerMinInstances
 PGbench
+pgsql
 Pradeep
 Puch
 qdrouterd
