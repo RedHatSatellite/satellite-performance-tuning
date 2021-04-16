@@ -9,7 +9,6 @@ on:
 jobs:
   build-html:
     runs-on: ubuntu-latest
-    defaults:
     steps:
       - name: Checkout git
         uses: actions/checkout@v2
