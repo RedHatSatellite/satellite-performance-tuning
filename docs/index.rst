@@ -1,5 +1,5 @@
-Satellite 6.7 Performance Tuning Guide
-==============================================
+Satellite 6.9 Performance Tuning Guide
+======================================
 
 .. toctree::
    :maxdepth: 2
