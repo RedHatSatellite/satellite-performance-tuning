@@ -22,7 +22,9 @@ jobs:
         run: python -m pip install -r requirements.txt
 
       - name: Build HTML
-        run: make -C docs/ singlehtml
+        run: |
+          make -C docs/ singlehtml
+          rm -f docs/_build/singlehtml/objects.inv
 
       - name: Deploy page
         uses: JamesIves/github-pages-deploy-action@4.1.1
