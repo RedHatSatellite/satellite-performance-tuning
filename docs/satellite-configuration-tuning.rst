@@ -241,7 +241,7 @@ Under certain circumstances,mongod consumes randomly high memory (up to 1/2 of a
 
 Update custom-hiera.yaml:
 
--  Edit /etc/foreman-installer/custom-hiera.yaml and add the entry below inserting the value that is 20% of the physical RAM while keeping in mind the `guidlines <https://access.redhat.com/documentation/en-us/red_hat_satellite/6.7/html/installing_satellite_server_from_a_connected_network/preparing_your_environment_for_installation#hardware_storage_prerequisites>`_ in this case, approximately 6GB for a 32GB server::
+-  Edit /etc/foreman-installer/custom-hiera.yaml and add the entry below inserting the value that is 20% of the physical RAM while keeping in mind the `guidlines <https://access.redhat.com/documentation/en-us/red_hat_satellite/6.6/html/installing_satellite_server_from_a_connected_network/preparing_your_environment_for_installation#hardware_storage_prerequisites>`_ in this case, approximately 6GB for a 32GB server::
 
   mongodb::server::config_data:
    storage.wiredTiger.engineConfig.cacheSizeGB: 6
@@ -264,7 +264,7 @@ Utility used for checking IO speed specific to MongoDB:
 
 For MongoDB benchmark meant to run on (stage) Satellite installs, check `mongo-benchmark <https://github.com/RedHatSatellite/satellite-support/blob/master/mongo-benchmark>`_ tool in `satellite-support <https://github.com/RedHatSatellite/satellite-support>`_ git repository.
 
-Depending on a disk drive type, file system choice (ext4 or xfs) for MongoDB storage directory might be important:
+Depending on a disk drive type, file syscorrection of storage requirement link in satellite 6.9 tuning guide branchtem choice (ext4 or xfs) for MongoDB storage directory might be important:
 
  - https://scalegrid.io/blog/xfs-vs-ext4-comparing-mongodb-performance-on-aws-ec2/
 
