@@ -31,7 +31,7 @@ The version of Apache httpd that ships with Red Hat Satellite 6 by default uses 
 
 When the number of requests to the apache exceed the maximum number of child processes that can be launched to handle the incoming connections, an HTTP 503 Service Unavailable Error is raised by Apache.
 
-Amidst httpd running out of processes to handle the incoming connections can also result in multiple component failure on the Satellite side due to the dependency of components like Passenger, Pulp on the availability of httpd processes.
+Amidst httpd running out of processes to handle the incoming connections can also result in multiple component failure on the Satellite side due to the dependency of components like Pulp on the availability of httpd processes.
 
 Based on your expected peak load, you might want to modify the configuration of apache prefork to enable it to handle more concurrent requests.
 
@@ -48,13 +48,6 @@ The MaxClients (see MaxRequestWorker which is a new name in Apache docs) paramet
 
 The StartServers parameter defines how many server processes will be launched by default when the httpd process is started.
 
-Note: While accounting for the limits to be set for the ServerLimit, please take a note of the values for PassengerMaxPoolSize, PassengerMaxRequestQueueSize, number of hosts that may run the client registration in parallel and max number of pulp processes that can be launched. The following formula can be used to estimate the value of ServerLimit parameter:
-
-  ServerLimit = PassengerMaxPoolSize + PassengerMaxRequestQueueSize + Amount of content hosts being registered in parallel + number of launchable pulp processes
-
-For example, an adequate value for ServerLimit on a Satellite 6.5 configuration that has PassengerMaxPoolSize set to 24, PassengerMaxRequestQueueSize set to 400 and expecting to register 150 content hosts in parallel with pulp configuration not being modified, can be calculated as shown below:
-
-  ServerLimit = 24 + 400 + 150 + 8 = 582
 
 Increasing the MaxOpenFiles Limit
 =================================
@@ -149,50 +142,50 @@ Puma is a ruby application server which is used for serving the Foreman related 
 For any Satellite configuration that is supposed to handle a large number of clients or frequent operations, it is important for the Puma to be tuned appropriately.
 
 Threads min effects
-===================
+--------------------
 Less threads will lead to more memory usage for different scales on the Satellite server.
 
 For example, we have compared these two setups:
 
-======================================     ==========================================
-Satellite VM with 8 CPUs, 40 GB RAM        Satellite VM with 8 CPUs, 40 GB RAM
+====================================== ===== ==========================================
+Satellite VM with 8 CPUs, 40 GB RAM          Satellite VM with 8 CPUs, 40 GB RAM
 -------------------------------------------------------------------------------------
---foreman-service-puma-threads-min=0       --foreman-service-puma-threads-min=16
---foreman-service-puma-threads-max=16      --foreman-service-puma-threads-max=16
---foreman-service-puma-workers=2           --foreman-service-puma-workers=2
-======================================     ==========================================
+--foreman-service-puma-threads-min=0         --foreman-service-puma-threads-min=16
+--foreman-service-puma-threads-max=16        --foreman-service-puma-threads-max=16
+--foreman-service-puma-workers=2             --foreman-service-puma-workers=2
+====================================== ===== ==========================================
 
 When we tune the puma server with t_min=16 puma will consume about 12% less memory as compared to t_min=0.
 
 Setting threads min, max & workers
-===================================
+-----------------------------------
 More workers will allow for lower time to register hosts in parallel.
 
 For example, we have compared these two setups:
 
-======================================     ==========================================
-Satellite VM with 8 CPUs, 40 GB RAM        Satellite VM with 8 CPUs, 40 GB RAM
+====================================== ===== ==========================================
+Satellite VM with 8 CPUs, 40 GB RAM           Satellite VM with 8 CPUs, 40 GB RAM
 -------------------------------------------------------------------------------------
---foreman-service-puma-threads-min=16      --foreman-service-puma-threads-min=8
---foreman-service-puma-threads-max=16      --foreman-service-puma-threads-max=8
---foreman-service-puma-workers=2           --foreman-service-puma-workers=2
-======================================     ==========================================
+--foreman-service-puma-threads-min=16        --foreman-service-puma-threads-min=8
+--foreman-service-puma-threads-max=16        --foreman-service-puma-threads-max=8
+--foreman-service-puma-workers=2             --foreman-service-puma-workers=2
+====================================== ===== ==========================================
 
 In the second case with more workers but the same total number of threads, we have seen about 11% of speedup in highly concurrent registrations scenario. Moreover, adding more workers did not consume more cpu and memory but will get more performance.
 
 Setting right number of workers for different number of CPUs
-=============================================================
+-------------------------------------------------------------
 If you have enough CPUs, adding more workers adds more performance.
 
 For example, we have compared Satellite setups with 8 and 16 CPUs.
 
-======================================        ===========================================
-Satellite VM with 8 CPUs, 40 GB RAM           Satellite VM with 16 CPUs, 40 GB RAM
+=========================================== ===== ===========================================
+Satellite VM with 8 CPUs, 40 GB RAM                Satellite VM with 16 CPUs, 40 GB RAM
 -------------------------------------------------------------------------------------
---foreman-service-puma-threads-min=16         --foreman-service-puma-threads-min=8
---foreman-service-puma-threads-max=16         --foreman-service-puma-threads-max=8
---foreman-service-puma-workers=2,4,8 and 16   --foreman-service-puma-workers=2,4,8 and 16
-===========================================   ============================================
+--foreman-service-puma-threads-min=16              --foreman-service-puma-threads-min=8
+--foreman-service-puma-threads-max=16              --foreman-service-puma-threads-max=8
+--foreman-service-puma-workers=2,4,8 and 16        --foreman-service-puma-workers=2,4,8 and 16
+=========================================== ===== ============================================
 
 In 8 CPUs setup, changing the number of workers from 2 to 16, improved concurrent registration time by 36%. In 16 CPU setup, the same change caused 55% improvement.
 
