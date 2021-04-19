@@ -141,33 +141,63 @@ You might see the following error in /var/log/journal in Red Hat Enterprise Linu
 
 This error message appears because qpid maintains management objects for queues, sessions, and connections and recycles them every ten seconds by default. The same object with the same ID is created, deleted, and created again. The old management object is not yet purged, which is why qpid throws this error. Here’s a workaround: lower the mgmt-pub-interval parameter from the default 10seconds to something lower. Add it to /etc/qpid/qpidd.conf and restart the qpidd service.  See also `Bug 1335694 <https://bugzilla.redhat.com/show_bug.cgi?id=1335694>`_ comment 7.
 
-Passenger Tuning
+Puma Tuning
 ================
 
-Passenger is a ruby application server which is used for serving the Foreman related requests to the clients. Passenger executes as a module inside the Apache httpd2 and handles the incoming requests directed towards the use of Foreman API or Satellite UI.
+Puma is a ruby application server which is used for serving the Foreman related requests to the clients. 
 
-For any Satellite configuration that is supposed to handle a large number of clients or frequent operations, it is important for the Passenger to be tuned appropriately.
+For any Satellite configuration that is supposed to handle a large number of clients or frequent operations, it is important for the Puma to be tuned appropriately.
 
-The below snippet provides an idea for tuning Passenger (see `how to use custom-hiera.yaml` file; this will modify /etc/httpd/conf.modules.d/passenger_extra.conf file)::
+Threads min effects
+===================
+Less threads will lead to more memory usage for different scales on the Satellite server.
 
-  File: /etc/foreman-installer/custom-hiera.yaml
-  apache::mod::passenger::passenger_max_pool_size: 48
-  apache::mod::passenger::passenger_max_request_queue_size: 400
+For example, we have compared these two setups:
 
-In the above example, we set the tuning for two important keys inside Passenger:
+======================================     ==========================================
+Satellite VM with 8 CPUs, 40 GB RAM        Satellite VM with 8 CPUs, 40 GB RAM
+-------------------------------------------------------------------------------------
+--foreman-service-puma-threads-min=0       --foreman-service-puma-threads-min=16
+--foreman-service-puma-threads-max=16      --foreman-service-puma-threads-max=16
+--foreman-service-puma-workers=2           --foreman-service-puma-workers=2
+======================================     ==========================================
 
-PassengerMaxPoolSize: The parameter defines how many ruby application instances can be launched by Passenger once the process has started. To calculate an optimal value for the parameter, multiply the total number of VCPUs available in your deployment by 2 and that is the value for the PassengerMaxPoolSize parameter.
+When we tune the puma server with t_min=16 puma will consume about 12% less memory as compared to t_min=0.
 
-PassengerMaxRequestQueueSize: The PassengerMaxRequestQueueSize parameter defines how many requests can passenger queue for processing. The value for this parameter should never exceed the value of ServerLimit parameter set for the Apache httpd2.
+Setting threads min, max & workers
+===================================
+More workers will allow for lower time to register hosts in parallel.
 
-Foreman Tuning
-==============
+For example, we have compared these two setups:
 
-Foreman is the central application which provides the majority of the Satellite functionality as well as the GUI of Satellite. Under heavy load, the Foreman might need some amount of scaling up so as to provide adequate response times to the incoming requests.
+======================================     ==========================================
+Satellite VM with 8 CPUs, 40 GB RAM        Satellite VM with 8 CPUs, 40 GB RAM
+-------------------------------------------------------------------------------------
+--foreman-service-puma-threads-min=16      --foreman-service-puma-threads-min=8
+--foreman-service-puma-threads-max=16      --foreman-service-puma-threads-max=8
+--foreman-service-puma-workers=2           --foreman-service-puma-workers=2
+======================================     ==========================================
 
-Installer option “--foreman-passenger-min-instances 12” (defaults to 1) can be used to tune Foreman application (that will set “PassengerMinInstances” in /etc/httpd/conf.d/05-foreman-ssl.conf file).
+In the second case with more workers but the same total number of threads, we have seen about 11% of speedup in highly concurrent registrations scenario. Moreover, adding more workers did not consume more cpu and memory but will get more performance.
 
-PassengerMinInstances: The configuration key tells how many application instances should be running every time even when no load is being experienced by the application. To calculate an optimal value for the configuration key, divide the value of PassengerMaxPoolSize by 2. One of the repercussions that may be seen with such a tuning is the increased memory usage on the system attributed to the fact of having more foreman instances running during ideal conditions.
+Setting right number of workers for different number of CPUs
+=============================================================
+If you have enough CPUs, adding more workers adds more performance.
+
+For example, we have compared Satellite setups with 8 and 16 CPUs.
+
+======================================        ===========================================
+Satellite VM with 8 CPUs, 40 GB RAM           Satellite VM with 16 CPUs, 40 GB RAM
+-------------------------------------------------------------------------------------
+--foreman-service-puma-threads-min=16         --foreman-service-puma-threads-min=8
+--foreman-service-puma-threads-max=16         --foreman-service-puma-threads-max=8
+--foreman-service-puma-workers=2,4,8 and 16   --foreman-service-puma-workers=2,4,8 and 16
+===========================================   ============================================
+
+In 8 CPUs setup, changing the number of workers from 2 to 16, improved concurrent registration time by 36%. In 16 CPU setup, the same change caused 55% improvement.
+
+Adding more workers can also help with total registration concurrency Satellite can handle. In our measurements, setups with 2 workers were able to handle up to 480 concurrent registrations, but adding more workers improved the situation.
+
 
 Dynflow Tuning
 ==============
@@ -227,7 +257,7 @@ Under certain circumstances, mongod consumes randomly high memory (up to 1/2 of 
 
 **1.** Update custom-hiera.yaml:
 
-Edit /etc/foreman-installer/custom-hiera.yaml and add the entry below inserting the value that is 20% of the physical RAM while keeping in mind the `guidlines <https://access.redhat.com/documentation/en-us/red_hat_satellite/6.7/html/installing_satellite_server_from_a_connected_network/preparing_your_environment_for_installation#hardware_storage_prerequisites>`_ in this case, approximately 6GB for a 32GB server. Please note the formatting of the second line and the indent::
+Edit /etc/foreman-installer/custom-hiera.yaml and add the entry below inserting the value that is 20% of the physical RAM while keeping in mind the `guidlines <https://access.redhat.com/documentation/en-us/red_hat_satellite/6.7/html/installing_satellite_server_from_a_connected_network/preparing-environment-for-satellite-installation#system-requirements_satellite>`_ in this case, approximately 6GB for a 32GB server. Please note the formatting of the second line and the indent::
 
   mongodb::server::config_data:
    storage.wiredTiger.engineConfig.cacheSizeGB: 6

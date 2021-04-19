@@ -2,7 +2,7 @@
 Legal notice
 ============
 
-Copyright © 2020 Red Hat, Inc.
+Copyright © 2021 Red Hat, Inc.
 
 The text of and illustrations in this document are licensed by Red Hat under a Creative Commons Attribution–Share Alike 3.0 Unported license ("CC-BY-SA").
 

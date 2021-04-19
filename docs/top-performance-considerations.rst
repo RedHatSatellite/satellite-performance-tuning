@@ -5,7 +5,7 @@ Top Performance Considerations
 This is the list of things that you can do to improve the performance and scalability of Red Hat Satellite 6:
 
 - Configuring httpd
-- Configuring passenger to increase concurrency
+- Configuring puma to increase concurrency
 - Configure candlepin
 - Configure pulp
 - Configure Foreman’s performance and scalability

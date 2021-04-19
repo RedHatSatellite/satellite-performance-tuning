@@ -5,7 +5,7 @@ Configuring your environment for Performance
 CPU
 ===
 
-The more physical cores that are available to Satellite 6.8, the higher throughput can be achieved for the tasks. Some of the Satellite components such as Puppet, MongoDB, PostgreSQL are CPU intensive applications and can really benefit from the higher number of available CPU cores.
+The more physical cores that are available to Satellite 6.9, the higher throughput can be achieved for the tasks. Some of the Satellite components such as Puppet, MongoDB, PostgreSQL are CPU intensive applications and can really benefit from the higher number of available CPU cores.
 
 Memory
 ======
