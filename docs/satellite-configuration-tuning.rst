@@ -13,7 +13,7 @@ Red Hat Enterprise Linux 7 enables the tuned daemon by default during installati
   # chkconfig tuned on
   RHEL 7 (bare-metal):
   # tuned-adm profile throughput-performance
-  RHEL 7 (virtual machine) 
+  RHEL 7 (virtual machine)
   # tuned-adm profile virtual-guest
 
 Transparent Huge Pages is a memory management technique used by the Linux kernel which reduces the overhead of using Translation Lookaside Buffer (TLB) by using larger sized memory pages. Due to databases having Sparse Memory Access patterns instead of Contiguous Memory access patterns, database workloads often perform poorly when Transparent Huge Pages is enabled.
@@ -134,10 +134,12 @@ You might see the following error in /var/log/journal in Red Hat Enterprise Linu
 
 This error message appears because qpid maintains management objects for queues, sessions, and connections and recycles them every ten seconds by default. The same object with the same ID is created, deleted, and created again. The old management object is not yet purged, which is why qpid throws this error. Here’s a workaround: lower the mgmt-pub-interval parameter from the default 10seconds to something lower. Add it to /etc/qpid/qpidd.conf and restart the qpidd service.  See also `Bug 1335694 <https://bugzilla.redhat.com/show_bug.cgi?id=1335694>`_ comment 7.
 
+.. _puma_tuning:
+
 Puma Tuning
 ================
 
-Puma is a ruby application server which is used for serving the Foreman related requests to the clients. 
+Puma is a ruby application server which is used for serving the Foreman related requests to the clients.
 
 For any Satellite configuration that is supposed to handle a large number of clients or frequent operations, it is important for the Puma to be tuned appropriately.
 
@@ -203,7 +205,7 @@ Dynflow Tuning
 
 Dynflow is the workflow management system and task orchestrator which is built as a plugin inside Foreman and is used to execute the different tasks of Satellite in an out-of-order execution manner. Under the conditions when there are a lot of clients checking in on Satellite and running a number of tasks, the Dynflow can take some help from an added tuning specifying how many executors can it launch.
 
-In Satellite 6.8, Dynflow configuration has been changed as how this is configured entirely and we are working on a new dynflow configuration. Soon, will release a new version of the performance brief with new dynflow configuration. See these `examples <https://gist.github.com/adamruzicka/1991892ce22b18e030f9a4db95406319>`_ for more details. 
+In Satellite 6.8, Dynflow configuration has been changed as how this is configured entirely and we are working on a new dynflow configuration. Soon, will release a new version of the performance brief with new dynflow configuration. See these `examples <https://gist.github.com/adamruzicka/1991892ce22b18e030f9a4db95406319>`_ for more details.
 
 PostgreSQL Tuning
 =================
@@ -229,7 +231,7 @@ work_mem: The work_mem is the memory that is allocated on per process basis for 
 
 autovacuum_vacuum_cost_limit: The key defines the cost limit value for the vacuuming operation inside the autovacuum process to clean up the dead tuples inside the database relations. The cost limit defines the number of tuples that can be processed in a single run by the process. An optimal value for this is 2000 based on the general load that Satellite pushes on the PostgreSQL server process.
 
-Note - With the upgrade to Postgres 12, ‘checkpoint_segments’ configuration is not supported. For more details, please refer to this `bugzilla <https://bugzilla.redhat.com/show_bug.cgi?id=1867311#c12>`_ . 
+Note - With the upgrade to Postgres 12, ‘checkpoint_segments’ configuration is not supported. For more details, please refer to this `bugzilla <https://bugzilla.redhat.com/show_bug.cgi?id=1867311#c12>`_ .
 
 Benchmarking raw DB performance
 ===============================
@@ -266,7 +268,7 @@ Edit /etc/foreman-installer/custom-hiera.yaml and add the entry below inserting 
   # satellite-installer
 
 
-For more details, please refer to this Kbase `article <https://access.redhat.com/solutions/4505561>`_. 
+For more details, please refer to this Kbase `article <https://access.redhat.com/solutions/4505561>`_.
 
 
 Benchmarking raw performance
