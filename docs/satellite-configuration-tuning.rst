@@ -205,7 +205,7 @@ Dynflow Tuning
 
 Dynflow is the workflow management system and task orchestrator which is built as a plugin inside Foreman and is used to execute the different tasks of Satellite in an out-of-order execution manner. Under the conditions when there are a lot of clients checking in on Satellite and running a number of tasks, the Dynflow can take some help from an added tuning specifying how many executors can it launch.
 
-In Satellite 6.8, Dynflow configuration has been changed as how this is configured entirely and we are working on a new dynflow configuration. Soon, will release a new version of the performance brief with new dynflow configuration. See these `examples <https://gist.github.com/adamruzicka/1991892ce22b18e030f9a4db95406319>`_ for more details.
+The following configuration snippet provides more information about the tunings involved related to Dynflow: https://satellite.example.com/foreman_tasks/sidekiq
 
 PostgreSQL Tuning
 =================
