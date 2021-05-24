@@ -41,4 +41,8 @@ Instructions for use:
 3. The Ruby app server will need to be tuned directly via the Puma Tuning section: :ref:`puma_tuning`.
 4. Resume operations
 
-NOTE: The specific tuning settings for each profile can be viewed in the configuration files contained in `/usr/share/foreman-installer/config/foreman.hiera/tuning/sizes`
+NOTE: 
+
+1.The specific tuning settings for each profile can be viewed in the configuration files contained in `/usr/share/foreman-installer/config/foreman.hiera/tuning/sizes`
+
+2.Moreover, tuning Profiles are not covering `puma tuning <https://github.com/RedHatSatellite/satellite-performance-tuning/blob/devel/docs/satellite-configuration-tuning.rst#puma-tuning>`_ as of now but we are working on it. Please refer to this `bug <https://bugzilla.redhat.com/show_bug.cgi?id=1959691>`_ for more details. 
