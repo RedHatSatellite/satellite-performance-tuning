@@ -258,7 +258,7 @@ Under certain circumstances, mongod consumes randomly high memory (up to 1/2 of 
 
 **1.** Update custom-hiera.yaml:
 
-Edit /etc/foreman-installer/custom-hiera.yaml and add the entry below inserting the value that is 20% of the physical RAM while keeping in mind the `guidlines <https://access.redhat.com/documentation/en-us/red_hat_satellite/6.9-beta/html/installing_satellite_server_from_a_connected_network/preparing-environment-for-satellite-installation#storage-guidelines_satellite>`_ in this case, approximately 6GB for a 32GB server. Please note the formatting of the second line and the indent::
+Edit /etc/foreman-installer/custom-hiera.yaml and add the entry below inserting the value that is 20% of the physical RAM while keeping in mind the `guidlines <https://access.redhat.com/documentation/en-us/red_hat_satellite/6.9/html/installing_satellite_server_from_a_connected_network/preparing-environment-for-satellite-installation#storage-guidelines_satellite>`_ in this case, approximately 6GB for a 32GB server. Please note the formatting of the second line and the indent::
 
   mongodb::server::config_data:
    storage.wiredTiger.engineConfig.cacheSizeGB: 6
