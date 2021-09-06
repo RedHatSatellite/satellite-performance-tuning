@@ -25,7 +25,7 @@ Apache HTTPD Performance Tuning
 Apache httpd forms a core part of the Satellite and acts as a web server for handling the requests that are being made through the Satellite Web UI or exposed APIs. To increase the concurrency of the operations, httpd forms the first point where tuning can help to boost the performance of the Satellite.
 
 Configuring how many processes can be launched by Apache httpd
-==============================================================
+--------------------------------------------------------------
 
 The version of Apache httpd that ships with Red Hat Satellite 6 by default uses prefork request handling mechanism. With the prefork model of handling the requests, httpd will launch a new process to handle the incoming connection by the client.
 
@@ -50,7 +50,7 @@ The StartServers parameter defines how many server processes will be launched by
 
 
 Increasing the MaxOpenFiles Limit
-=================================
+---------------------------------
 
 With the tuning in place, apache httpd can easily open a lot of file descriptors on the server which may exceed the default limit of most of the linux systems in place. To avoid any kind of issues that may arise as a result of exceeding max open files limit on the system, please create the following file and directory and set the contents of the file as specified in the below given example::
 
@@ -63,19 +63,19 @@ Once the file has been edited, the following commands need to be run to make the
   systemctl daemon-reload
   foreman-maintain service restart
 
-Calculating the maximum open files limit for qdrouterd
-======================================================
 
-Calculate the limit for open files in qdrouterd using this formula: (Nx3) + 100, where N is the number of content hosts. Each content host may consume up to three file descriptors in the router, and 100 filedescriptors are required to run the router itself.
+qdrouterd and qpid tunings
+==========================
+
+Calculating the maximum open files limit for qdrouterd
+------------------------------------------------------
+
+Calculate the limit for open files in qdrouterd using this formula: `(N x 3) + 100`, where N is the number of content hosts. Each content host may consume up to three file descriptors in the router, and 100 filedescriptors are required to run the router itself.
 
 The following settings permit Satellite to scale up to 10,000 content hosts.
 
-qdrouterd settings
-==================
+Add/Update `qpid::router::open_file_limit` in `/etc/foreman-installer/custom-hiera.yaml` as shown below::
 
-Add/Update qpid::router::open_file_limit  in custom-hiera.yaml as shown below::
-
-  File: /etc/foreman-installer/custom-hiera.yaml
   qpid::router::open_file_limit: 150100
 
 Note The change must be applied via::
@@ -85,16 +85,12 @@ Note The change must be applied via::
   # foreman-maintain service restart
 
 Calculating the maximum open files limit for qpidd
-==================================================
+--------------------------------------------------
 
-Calculate the limit for open files in qpidd using this formula: (Nx4) + 500, where N is the number of content hosts. A single content host can consume up to four file descriptors and 500 file descriptors are required for the operations of Broker (a component of qpidd).
+Calculate the limit for open files in qpidd using this formula: `(N x 4) + 500`, where N is the number of content hosts. A single content host can consume up to four file descriptors and 500 file descriptors are required for the operations of Broker (a component of qpidd).
 
-qpidd settings
-==============
+Add/Update `qpid::open_file_limit` in `/etc/foreman-installer/custom-hiera.yaml` as shown below::
 
-Add/Update qpid::open_file_limit in /etc/foreman-installer/custom-hiera.yaml as shown below::
-
-  File: /etc/foreman-installer/custom-hiera.yaml
   qpid::open_file_limit: 65536
 
 Note The change must be applied via::
@@ -104,7 +100,7 @@ Note The change must be applied via::
   # foreman-maintain service restart
 
 Maximum asynchronous input-output (AIO) requests
-================================================
+------------------------------------------------
 
 Increase the maximum number of allowable concurrent AIO requests by increasing the kernel parameter `fs.aio-max-nr`.
 
@@ -121,30 +117,30 @@ This number should be bigger than 33 multiplied by the maximum number of the con
 Rebooting the machine also ensures that this change is applied.
 
 Storage Considerations
-======================
+----------------------
 
-Plan to have enough storage capacity for directory /var/lib/qpidd in advance when you are planning an installation that will use katello-agent extensively. In Red Hat Satellite 6, /var/lib/qpidd requires 2MB disk space per content host. See this `bug <https://bugzilla.redhat.com/show_bug.cgi?id=1366323>`_ for more details.
+Plan to have enough storage capacity for directory `/var/lib/qpidd` in advance when you are planning an installation that will use katello-agent extensively. In Red Hat Satellite 6, `/var/lib/qpidd` requires 2MB disk space per content host. See this `bug <https://bugzilla.redhat.com/show_bug.cgi?id=1366323>`_ for more details.
 
 mgmt-pub-interval setting
-=========================
+-------------------------
 
-You might see the following error in /var/log/journal in Red Hat Enterprise Linux 7::
+You might see the following error in journal (use `journalctl` command to access it) in Red Hat Enterprise Linux 7::
 
   satellite.example.com qpidd[92464]: [Broker] error Channel exception: not-attached: Channel 2 is not attached(/builddir/build/BUILD/qpid-cpp-0.30/src/qpid/amqp_0_10/SessionHandler.cpp: 39)satellite.example.com    qpidd[92464]: [Protocol] error Connectionqpid.10.1.10.1:5671-10.1.10.1:53790 timed out: closing
 
 This error message appears because qpid maintains management objects for queues, sessions, and connections and recycles them every ten seconds by default. The same object with the same ID is created, deleted, and created again. The old management object is not yet purged, which is why qpid throws this error. Here’s a workaround: lower the mgmt-pub-interval parameter from the default 10seconds to something lower. Add it to /etc/qpid/qpidd.conf and restart the qpidd service.  See also `Bug 1335694 <https://bugzilla.redhat.com/show_bug.cgi?id=1335694>`_ comment 7.
 
-.. _puma_tuning:
 
-Puma Tuning
-================
+Puma Tunings
+============
 
 Puma is a ruby application server which is used for serving the Foreman related requests to the clients.
 
 For any Satellite configuration that is supposed to handle a large number of clients or frequent operations, it is important for the Puma to be tuned appropriately.
 
 Threads min effects
---------------------
+-------------------
+
 Less threads will lead to more memory usage for different scales on the Satellite server.
 
 For example, we have compared these two setups:
@@ -162,7 +158,8 @@ For example, we have compared these two setups:
 When we tune the puma server with t_min=16 puma will consume about 12% less memory as compared to t_min=0.
 
 Setting threads min, max & workers
------------------------------------
+----------------------------------
+
 More workers will allow for lower time to register hosts in parallel.
 
 For example, we have compared these two setups:
@@ -181,6 +178,7 @@ In the second case with more workers but the same total number of threads, we ha
 
 Setting right number of workers for different number of CPUs
 -------------------------------------------------------------
+
 If you have enough CPUs, adding more workers adds more performance.
 
 For example, we have compared Satellite setups with 8 and 16 CPUs.
@@ -207,12 +205,13 @@ Dynflow is the workflow management system and task orchestrator which is built a
 
 The following configuration snippet provides more information about the tunings involved related to Dynflow: https://satellite.example.com/foreman_tasks/sidekiq
 
+
 PostgreSQL Tuning
 =================
 
 PostgreSQL is the primary SQL based database that is used by Satellite for the storage of persistent context across a wide variety of tasks that Satellite does. The database sees an extensive usage is usually working on to provide the Satellite with the data which it needs for its smooth functioning. This makes PostgreSQL a heavily used process which if tuned can have a number of benefits on the overall operational response of Satellite.
 
-The below set of tunings can be applied to PostgreSQL to improve its response times (see `how to use custom-hiera.yaml` file; this will modify /var/lib/pgsql/data/postgresql.conf file)::
+The below set of tunings can be applied to PostgreSQL to improve its response times (see `how to use custom-hiera.yaml` file; this will modify `/var/lib/pgsql/data/postgresql.conf` file)::
 
   File: /etc/foreman-installer/custom-hiera.yaml
   postgresql::server::config_entries:
@@ -223,18 +222,18 @@ The below set of tunings can be applied to PostgreSQL to improve its response ti
 
 In the above tuning configuration, there are a certain set of keys which we have altered:
 
-max_connections: The key defines the maximum number of connections that can be accepted by the PostgreSQL processes that are running. An optimal value for the parameter will be equal to the nearest multiple of 100 of the ServerLimit value of Apache httpd2 multiplied by 2. For example, if ServerLimit is set to 582, we can set the max_connections to 1000.
+`max_connections`: The key defines the maximum number of connections that can be accepted by the PostgreSQL processes that are running. An optimal value for the parameter will be equal to the nearest multiple of 100 of the ServerLimit value of Apache httpd2 multiplied by 2. For example, if ServerLimit is set to 582, we can set the max_connections to 1000.
 
-shared_buffers: The shared buffers define the memory used by all the active connections inside postgresql to store the data for the different database operations. An optimal value for this will vary between 2 GB to a maximum of 25% of your total system memory depending upon the frequency of the operations being conducted on Satellite.
+`shared_buffers`: The shared buffers define the memory used by all the active connections inside postgresql to store the data for the different database operations. An optimal value for this will vary between 2 GB to a maximum of 25% of your total system memory depending upon the frequency of the operations being conducted on Satellite.
 
-work_mem: The work_mem is the memory that is allocated on per process basis for Postgresql and is used to store the intermediate results of the operations that are being performed by the process. Setting this value to 8 MB should be more than enough for most of the intensive operations on Satellite.
+`work_mem`: The work_mem is the memory that is allocated on per process basis for Postgresql and is used to store the intermediate results of the operations that are being performed by the process. Setting this value to 8 MB should be more than enough for most of the intensive operations on Satellite.
 
-autovacuum_vacuum_cost_limit: The key defines the cost limit value for the vacuuming operation inside the autovacuum process to clean up the dead tuples inside the database relations. The cost limit defines the number of tuples that can be processed in a single run by the process. An optimal value for this is 2000 based on the general load that Satellite pushes on the PostgreSQL server process.
+`autovacuum_vacuum_cost_limit`: The key defines the cost limit value for the vacuuming operation inside the autovacuum process to clean up the dead tuples inside the database relations. The cost limit defines the number of tuples that can be processed in a single run by the process. An optimal value for this is 2000 based on the general load that Satellite pushes on the PostgreSQL server process.
 
 Note - With the upgrade to Postgres 12, ‘checkpoint_segments’ configuration is not supported. For more details, please refer to this `bugzilla <https://bugzilla.redhat.com/show_bug.cgi?id=1867311#c12>`_ .
 
 Benchmarking raw DB performance
-===============================
+-------------------------------
 
 To get a list of the top table sizes in disk space for both Candlepin and Foreman, check `postgres-size-report <https://github.com/RedHatSatellite/satellite-support/blob/master/postgres-size-report>`_ script in `satellite-support <https://github.com/RedHatSatellite/satellite-support>`_  git repository.
 
@@ -250,6 +249,7 @@ Note:
 
  - Never do any testing on production system and without valid backup.
  - Before you start testing, see how big the database files are. Testing with a really small database would not produce any meaningful results. E.g. if the DB is only 20G and the buffer pool is 32G, it won't show problems with large number of connections because the data will be completely buffered.
+
 
 MongoDb Tuning
 ==============
@@ -267,12 +267,11 @@ Edit /etc/foreman-installer/custom-hiera.yaml and add the entry below inserting 
 
   # satellite-installer
 
-
 For more details, please refer to this Kbase `article <https://access.redhat.com/solutions/4505561>`_.
 
 
 Benchmarking raw performance
-============================
+----------------------------
 
 To get a size report of MongoDB, use `mongo-size-report <https://github.com/RedHatSatellite/satellite-support/blob/master/mongo-size-report>`_ from `satellite-support <https://github.com/RedHatSatellite/satellite-support/>`_  repository.
 
