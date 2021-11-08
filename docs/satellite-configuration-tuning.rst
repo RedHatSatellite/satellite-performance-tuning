@@ -145,15 +145,15 @@ Less threads will lead to more memory usage for different scales on the Satellit
 
 For example, we have compared these two setups:
 
-+---------------------------------------+---------------------------------------+
-| Satellite VM with 8 CPUs, 40 GB RAM   | Satellite VM with 8 CPUs, 40 GB RAM   |
-+=======================================+=======================================+
-| --foreman-service-puma-threads-min=0  | --foreman-service-puma-threads-min=16 |
-+---------------------------------------+---------------------------------------+
-| --foreman-service-puma-threads-max=16 | --foreman-service-puma-threads-max=16 |
-+---------------------------------------+---------------------------------------+
-| --foreman-service-puma-workers=2      | --foreman-service-puma-workers=2      |
-+---------------------------------------+---------------------------------------+
++-----------------------------------------------+-----------------------------------------------+
+| Satellite VM with 8 CPUs, 40 GB RAM           | Satellite VM with 8 CPUs, 40 GB RAM           |
++===============================================+===============================================+
+| --foreman-foreman-service-puma-threads-min=0  | --foreman-foreman-service-puma-threads-min=16 |
++-----------------------------------------------+-----------------------------------------------+
+| --foreman-foreman-service-puma-threads-max=16 | --foreman-foreman-service-puma-threads-max=16 |
++-----------------------------------------------+-----------------------------------------------+
+| --foreman-foreman-service-puma-workers=2      | --foreman-foreman-service-puma-workers=2      |
++-----------------------------------------------+-----------------------------------------------+
 
 When we tune the puma server with t_min=16 puma will consume about 12% less memory as compared to t_min=0.
 
@@ -164,15 +164,15 @@ More workers will allow for lower time to register hosts in parallel.
 
 For example, we have compared these two setups:
 
-+---------------------------------------+---------------------------------------+
-| Satellite VM with 8 CPUs, 40 GB RAM   | Satellite VM with 8 CPUs, 40 GB RAM   |
-+=======================================+=======================================+
-| --foreman-service-puma-threads-min=16 | --foreman-service-puma-threads-min=8  |
-+---------------------------------------+---------------------------------------+
-| --foreman-service-puma-threads-max=16 | --foreman-service-puma-threads-max=8  |
-+---------------------------------------+---------------------------------------+
-| --foreman-service-puma-workers=2      | --foreman-service-puma-workers=4      |
-+---------------------------------------+---------------------------------------+
++-----------------------------------------------+-----------------------------------------------+
+| Satellite VM with 8 CPUs, 40 GB RAM           | Satellite VM with 8 CPUs, 40 GB RAM           |
++===============================================+===============================================+
+| --foreman-foreman-service-puma-threads-min=16 | --foreman-foreman-service-puma-threads-min=8  |
++-----------------------------------------------+-----------------------------------------------+
+| --foreman-foreman-service-puma-threads-max=16 | --foreman-foreman-service-puma-threads-max=8  |
++-----------------------------------------------+-----------------------------------------------+
+| --foreman-foreman-service-puma-workers=2      | --foreman-foreman-service-puma-workers=4      |
++-----------------------------------------------+-----------------------------------------------+
 
 In the second case with more workers but the same total number of threads, we have seen about 11% of speedup in highly concurrent registrations scenario. Moreover, adding more workers did not consume more cpu and memory but will get more performance.
 
@@ -183,15 +183,15 @@ If you have enough CPUs, adding more workers adds more performance.
 
 For example, we have compared Satellite setups with 8 and 16 CPUs.
 
-+-----------------------------------------------+---------------------------------------------+
-| Satellite VM with 8 CPUs, 40 GB RAM           | Satellite VM with 16 CPUs, 40 GB RAM        |
-+===============================================+=============================================+
-| --foreman-service-puma-threads-min=16         | --foreman-service-puma-threads-min=16       |
-+-----------------------------------------------+---------------------------------------------+
-| --foreman-service-puma-threads-max=16         | --foreman-service-puma-threads-max=16       |
-+-----------------------------------------------+---------------------------------------------+
-| --foreman-service-puma-workers=2,4,8 and 16   | --foreman-service-puma-workers=2,4,8 and 16 |
-+-----------------------------------------------+---------------------------------------------+
++-------------------------------------------------------+-----------------------------------------------------+
+| Satellite VM with 8 CPUs, 40 GB RAM                   | Satellite VM with 16 CPUs, 40 GB RAM                |
++=======================================================+=====================================================+
+| --foreman-foreman-service-puma-threads-min=16         | --foreman-foreman-service-puma-threads-min=16       |
++-------------------------------------------------------+-----------------------------------------------------+
+| --foreman-foreman-service-puma-threads-max=16         | --foreman-foreman-service-puma-threads-max=16       |
++-------------------------------------------------------+-----------------------------------------------------+
+| --foreman-foreman-service-puma-workers=2,4,8 and 16   | --foreman-foreman-service-puma-workers=2,4,8 and 16 |
++-------------------------------------------------------+-----------------------------------------------------+
 
 In 8 CPUs setup, changing the number of workers from 2 to 16, improved concurrent registration time by 36%. In 16 CPU setup, the same change caused 55% improvement.
 
