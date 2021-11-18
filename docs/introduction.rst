@@ -8,4 +8,4 @@ Red Hat Satellite is a complete system management product that enables system ad
 
 For more information on Red Hat Satellite 6, please visit:
 
-https://access.redhat.com/documentation/en-us/red_hat_satellite/6.9/
+https://access.redhat.com/documentation/en-us/red_hat_satellite/6.10

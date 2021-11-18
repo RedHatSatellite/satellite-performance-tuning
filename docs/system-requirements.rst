@@ -2,12 +2,12 @@
 System Requirements
 ===================
 
-For details of Red Hat Satellite 6 hardware and software requirements, please take a look at `Preparing your environment for installation <https://access.redhat.com/documentation/en-us/red_hat_satellite/6.9/html/installing_satellite_server_from_a_connected_network/preparing-environment-for-satellite-installation#system-requirements_satellite>`_, inside the installation guide.
+For details of Red Hat Satellite 6 hardware and software requirements, please take a look at `Preparing your environment for installation <https://access.redhat.com/documentation/en-us/red_hat_satellite/6.10/html/installing_satellite_server_from_a_connected_network/applying-custom-configuration_satellite>`_, inside the installation guide.
 
 Quick Tuning Guide
 ==================
 
-Users who wish to tune their Satellite based on expected managed host counts and hardware allocation can utilize the built in tuning profiles included in Satellite 6.9 and later that are available via the installation routine's new tuning flag (see `information in installation guide <https://github.com/RedHatSatellite/satellite-support/tree/master/tuning-profiles>`_)::
+Users who wish to tune their Satellite based on expected managed host counts and hardware allocation can utilize the built in tuning profiles included in Satellite 6.10 and later that are available via the installation routine's new tuning flag (see `information in installation guide <https://github.com/RedHatSatellite/satellite-support/tree/master/tuning-profiles>`_)::
 
   # satellite-installer --help
   Usage:
@@ -45,4 +45,3 @@ NOTE:
 
 1.The specific tuning settings for each profile can be viewed in the configuration files contained in `/usr/share/foreman-installer/config/foreman.hiera/tuning/sizes`
 
-2.Moreover, tuning Profiles are not covering `puma tuning <https://github.com/RedHatSatellite/satellite-performance-tuning/blob/devel/docs/satellite-configuration-tuning.rst#puma-tuning>`_ as of now but we are working on it. Please refer to this `bug <https://bugzilla.redhat.com/show_bug.cgi?id=1959691>`_ for more details. 

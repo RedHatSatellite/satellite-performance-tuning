@@ -5,12 +5,12 @@ Configuring your environment for Performance
 CPU
 ===
 
-The more physical cores that are available to Satellite 6.9, the higher throughput can be achieved for the tasks. Some of the Satellite components such as Puppet, MongoDB, PostgreSQL are CPU intensive applications and can really benefit from the higher number of available CPU cores.
+The more physical cores that are available to Satellite 6.10, the higher throughput can be achieved for the tasks. Some of the Satellite components such as Puppet, PostgreSQL are CPU intensive applications and can really benefit from the higher number of available CPU cores.
 
 Memory
 ======
 
-The higher amount of memory available in the system running Satellite, the better will be the response times for the Satellite operations. Since Satellite uses PostgreSQL and MongoDB as the database solutions, any additional memory coupled with the tunings will provide a boost to the response times of the applications due to increased data retention in the memory.
+The higher amount of memory available in the system running Satellite, the better will be the response times for the Satellite operations. Since Satellite uses PostgreSQL as the database solutions, any additional memory coupled with the tunings will provide a boost to the response times of the applications due to increased data retention in the memory.
 
 Disk
 ====
@@ -26,7 +26,7 @@ Also working on an updated benchmark script you can run (which will likely be in
 Note:
 
 - One may have to temporarily reduce the RAM in order to run the io benchmark, aka if the box has 256GB that is a lot of pulp space, so add mem=20G kernel option in grub. This is needed because script will execute a series of fio based IO tests against a targeted directory specified in its execution. This test will create a very large file that is double (2x) the size of the physical RAM on this system to ensure that we are not just testing the caching at the OS level of the storage.
-- Please bear above in mind when performing benchmark of other filesystems if you have them (like PostgreSQL or MongoDB storage) which might have significantly smaller capacity than Pulp storage and perhaps on different set of storage (SAN, iSCSI, etc).
+- Please bear above in mind when performing benchmark of other filesystems if you have them (like PostgreSQL storage) which might have significantly smaller capacity than Pulp storage and perhaps on different set of storage (SAN, iSCSI, etc).
 
 This test does not use directio and will utilize the OS + caching as normal operations would.
 

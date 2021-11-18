@@ -197,6 +197,89 @@ In 8 CPUs setup, changing the number of workers from 2 to 16, improved concurren
 
 Adding more workers can also help with total registration concurrency Satellite can handle. In our measurements, setups with 2 workers were able to handle up to 480 concurrent registrations, but adding more workers improved the situation.
 
+Installer auto-tuning
+----------------------
+
+If the user does not provide any Puma workers and thread values via installer command line (or they are not present in the Satellite configuration), the installer tries to do its best to configure a balanced number of workers. It follows this formula::
+
+ min(CPU*1.5, RAM_IN_GB - 1.5)
+
+which is too much wrt. memory - there have been cases where too many workers triggered OOM on Satellite.
+
+This should be fine for most cases, but with some usage patterns tuning is needed to either limit the amount of resources dedicated to Puma (so other Satellite components can use these) or for any other reason. Each Puma worker consumes around 1 GB of RAM.
+
+For your current setting see this::
+
+  # cat /etc/systemd/system/foreman.service.d/installer.conf
+  [Service]
+  User=foreman
+  Environment=FOREMAN_ENV=production
+  Environment=FOREMAN_HOME=/usr/share/foreman
+  Environment=FOREMAN_PUMA_THREADS_MIN=5
+  Environment=FOREMAN_PUMA_THREADS_MAX=5
+  Environment=FOREMAN_PUMA_WORKERS=30
+  # pgrep -u foreman --list-full | grep 'puma: cluster worker'
+  3466 puma: cluster worker 0: 3385 [foreman]
+  3471 puma: cluster worker 1: 3385 [foreman]
+  3477 puma: cluster worker 2: 3385 [foreman]
+  [...]
+
+Recommendations
+---------------
+
+In order to recommend thread and worker configurations for the different tuning profiles, we conducted Puma tuning testing on Satellite 6.10 with different tuning profiles and the main test run performed in this testing was concurrent registration with the following combinations along with different workers and threads.
+
+As of now our recommendation is based purely on concurrent registration performance, so it might not reflect your exact use-case (e.g. if your setup of very content oriented with lots of publishes and promotes, you might want to limit resources consumed by Puma in favor of Pulp and PostgreSQL):
+
++--------------------+----------------------------+----------+-----------+-----------------------------+------------------------------+
+|      Name          |   Number of managed host   |    RAM   |   Cores   |   Recommended Puma Threads  |   Recommended Puma Workers   | 
++====================+============================+==========+===========+=============================+==============================+
+|      default       |   0-5000                   |    20G   |   4       |   16                        |   4-6                        |
++--------------------+----------------------------+----------+-----------+-----------------------------+------------------------------+
+|      medium        |   5000-10000               |    32G   |   8       |   16                        |   8-12                       |
++--------------------+----------------------------+----------+-----------+-----------------------------+------------------------------+
+|      large         |   10000-20000              |    64G   |   16      |   16                        |   12-18                      |
++--------------------+----------------------------+----------+-----------+-----------------------------+------------------------------+
+|      extra-large   |   20000-60000              |    128G  |   32      |   16                        |   16-24                      |
++--------------------+----------------------------+----------+-----------+-----------------------------+------------------------------+
+|      large         |   60000+                   |    256G+ |   48+     |   16                        |   20-26                      |
++--------------------+----------------------------+----------+-----------+-----------------------------+------------------------------+
+
+Reasoning behind these numbers:
+
+Use 16 threads with all the tuning profiles - we have seen up to 23% performance increase with 16 threads when compared to 5 threads (14% for 8 compared 4 and 10% for 32 compared to 4) - see table below:
+
++--------------------+----------------------------+---------------------------+----------------------------+-----------------------------+
+|                    |   4 workers, 4 threads     |    4 workers, 8 threads   |   4 workers, 16 threads    |   4 workers, 32 threads     |  
++====================+============================+===========================+============================+=============================+
+|      Improvement   |   0%                       |    14%                    |   23%                      |   10%                       |
++--------------------+----------------------------+---------------------------+----------------------------+-----------------------------+
+
+Use 4 - 6 workers on a default setup (4 CPUs) - we have seen about 25% higher performance with 5 workers when compared to 2 workers, but 8% lower performance with 8 workers when compared to 2 workers - see table below:
+
++--------------------+----------------------------+---------------------------+----------------------------+-----------------------------+
+|                    |   2 workers, 16 threads    |    4 workers, 16 threads  |   6 workers, 16 threads    |   8 workers, 16 threads     |
++====================+============================+===========================+============================+=============================+
+|      Improvement   |   0%                       |    26%                    |   22%                      |   -8%                       |
++--------------------+----------------------------+---------------------------+----------------------------+-----------------------------+
+
+Use 8 - 12 workers on a medium setup (8 CPUs) - see table below:
+
++--------------------+----------------------------+---------------------------+----------------------------+-----------------------------+-----------------------------+
+|                    |   2 workers, 16 threads    |    4 workers, 16 threads  |   8 workers, 16 threads    |   12 workers, 16 threads    |  16 workers, 16 threads     |
++====================+============================+===========================+============================+=============================+=============================+
+|      Improvement   |   0%                       |    51%                    |   52%                      |   52%                       |  42%                        |
++--------------------+----------------------------+---------------------------+----------------------------+-----------------------------+-----------------------------+
+
+Use 16 - 24 workers on a 32 CPUs setup (this was tested on a 90 GB RAM machine and memory turned out to be a factor here as system started swapping - propper “extra-large” should have 128GB), higher number of workers was problematic for higher registration concurrency levels we tested, so we can not recommend it.
+
++--------------------+----------------------------+---------------------------+----------------------------+-----------------------------+-----------------------------+-----------------------------+
+|                    |   4 workers, 16 threads    |    8 workers, 16 threads  |   16 workers, 16 threads   |   24 workers, 16 threads    |  32 workers, 16 threads     |  48 workers, 16 threads     |
++====================+============================+===========================+============================+=============================+=============================+=============================+
+|      Improvement   |   0%                       |    37%                    |   44%                      |   52%                       |  too many failures          |  too many failures          |
++--------------------+----------------------------+---------------------------+----------------------------+-----------------------------+-----------------------------+-----------------------------+
+
+
 
 Dynflow Tuning
 ==============
@@ -251,40 +334,30 @@ Note:
  - Before you start testing, see how big the database files are. Testing with a really small database would not produce any meaningful results. E.g. if the DB is only 20G and the buffer pool is 32G, it won't show problems with large number of connections because the data will be completely buffered.
 
 
-MongoDb Tuning
-==============
+Capsule Configuration Tuning
+============================
 
-Under certain circumstances, mongod consumes randomly high memory (up to 1/2 of all RAM) and this aggressive memory usage limits other processes or can cause OOM killer to kill mongod. In order to overcome this situation, tune the cache size by referring the following steps:
+Capsules (called Smart Proxies in upstream Foreman) are meant to offload part of Satellite load related to distributing content to clients but they can also be used to execute Remote Execution jobs. What they can not help with is anything which extensively uses Satellite API as host registration or package profile update.
 
-**1.** Update custom-hiera.yaml:
+Initial results
+---------------
 
-Edit /etc/foreman-installer/custom-hiera.yaml and add the entry below inserting the value that is 20% of the physical RAM while keeping in mind the `guidlines <https://access.redhat.com/documentation/en-us/red_hat_satellite/6.9/html/installing_satellite_server_from_a_connected_network/preparing-environment-for-satellite-installation#storage-guidelines_satellite>`_ in this case, approximately 6GB for a 32GB server. Please note the formatting of the second line and the indent::
+As of now testing for Capsule tuning recommendations is ongoing, but we are sharing some initial results here already.
+We have measured multiple test cases on multiple Capsule 6.10 configurations:
 
-  mongodb::server::config_data:
-   storage.wiredTiger.engineConfig.cacheSizeGB: 6
++--------------------------+----------+------------------+
+| Capsule HW configuration |   CPUs   |    memory        |
++==========================+==========+==================+
+|      minimal             |    4     |      12 GB       |
++--------------------------+----------+------------------+
+|      large               |    8     |      24 GB       |
++--------------------------+----------+------------------+
+|      extra large         |    16    |      46 GB       |
++--------------------------+----------+------------------+
 
-**2.** Run installer to apply changes::
+For concurrent registrations a bottleneck is CPU speed, but all configs were able to handle even high concurrency without swapping.
 
-  # satellite-installer
+We have tested executing Remote Execution jobs via both SSH and Ansible backend on 500, 2000 and 4000 hosts. All configurations were able to handle all of the tests without errors, except for the smallest configuration (4CPUs and 12 GB memory) which failed to finish on all 4000 hosts.
 
-For more details, please refer to this Kbase `article <https://access.redhat.com/solutions/4505561>`_.
+In a sync test where we synced RHEL 6, 7, 8 BaseOS and 8 AppStream we have not seen significant differences amongst Capsule configurations. This will be different for syncing a higher number of content views in parallel.
 
-
-Benchmarking raw performance
-----------------------------
-
-To get a size report of MongoDB, use `mongo-size-report <https://github.com/RedHatSatellite/satellite-support/blob/master/mongo-size-report>`_ from `satellite-support <https://github.com/RedHatSatellite/satellite-support/>`_  repository.
-
-Utility used for checking IO speed specific to MongoDB:
-
- - https://www.mongodb.com/blog/post/checking-disk-performance-with-the-mongoperf
-
-For MongoDB benchmark meant to run on (stage) Satellite installs, check `mongo-benchmark <https://github.com/RedHatSatellite/satellite-support/blob/master/mongo-benchmark>`_ tool in `satellite-support <https://github.com/RedHatSatellite/satellite-support>`_ git repository.
-
-Depending on a disk drive type, file system choice (ext4 or xfs) for MongoDB storage directory might be important:
-
- - https://scalegrid.io/blog/xfs-vs-ext4-comparing-mongodb-performance-on-aws-ec2/
-
-Note:
-
- - Never do any testing on production system and without valid backup.
