@@ -247,7 +247,7 @@ As of now our recommendation is based purely on concurrent registration performa
 
 Reasoning behind these numbers:
 
-Use 16 threads with all the tuning profiles - we have seen up to 23% performance increase with 16 threads when compared to 5 threads (14% for 8 compared 4 and 10% for 32 compared to 4) - see table below:
+Use 16 threads with all the tuning profiles - we have seen up to 23% performance increase with 16 threads when compared to 5 threads (14% for 8 compared to 4 and 10% for 32 compared to 4) - see table below:
 
 +--------------------+----------------------------+---------------------------+----------------------------+-----------------------------+
 |                    |   4 workers, 4 threads     |    4 workers, 8 threads   |   4 workers, 16 threads    |   4 workers, 32 threads     |  
@@ -271,7 +271,7 @@ Use 8 - 12 workers on a medium setup (8 CPUs) - see table below:
 |      Improvement   |   0%                       |    51%                    |   52%                      |   52%                       |  42%                        |
 +--------------------+----------------------------+---------------------------+----------------------------+-----------------------------+-----------------------------+
 
-Use 16 - 24 workers on a 32 CPUs setup (this was tested on a 90 GB RAM machine and memory turned out to be a factor here as system started swapping - propper “extra-large” should have 128GB), higher number of workers was problematic for higher registration concurrency levels we tested, so we can not recommend it.
+Use 16 - 24 workers on a 32 CPUs setup (this was tested on a 90 GB RAM machine and memory turned out to be a factor here as system started swapping - proper “extra-large” should have 128GB), higher number of workers was problematic for higher registration concurrency levels we tested, so we can not recommend it.
 
 +--------------------+----------------------------+---------------------------+----------------------------+-----------------------------+-----------------------------+-----------------------------+
 |                    |   4 workers, 16 threads    |    8 workers, 16 threads  |   16 workers, 16 threads   |   24 workers, 16 threads    |  32 workers, 16 threads     |  48 workers, 16 threads     |
