@@ -67,8 +67,26 @@ Once the file has been edited, the following commands need to be run to make the
 qdrouterd and qpid tunings
 ==========================
 
+Disabling Katello Agent Infrastructure on Satellite 6.10+
+---------------------------------------------------------
+
+Katello-agent infrastructure is used to push package updates to Content Hosts from Satellite. This uses Apache Qpid and Qpid Dispatch Router (qdrouterd) for messaging between Satellite, Capsules, and Content Hosts. Starting with Satellite 6.10, Katello Agent Infrastructure is optional and disabled by default for new installations. For Satellite deployments upgraded from prior versions, it will remain enabled upon upgrade; however if this feature is not being used, it is recommended to disable it to conserve hardware resources on Satellite and Capsule servers.
+
+To disable and remove katello-agent infrastructure on (upgraded) Satellite or Capsule 6.10+, run the command:
+
+  `satellite-installer --foreman-proxy-content-enable-katello-agent false`
+
+If katello-agent was previously deployed on a Content Host but is no longer desired, it can be completely removed. Before proceeding, check that the gofer package and service is not required by any application other than katello-agent. Once it is confirmed that gofer is not needed, you may then remove katello-agent and gofer using the commands:
+
+  `systemctl disable --now goferd`
+  `yum remove katello-agent gofer`
+
+The remainder of this section describes tuning and large deployment considerations for users who wish to continue using katello-agent infrastructure with Satellite.
+
 Calculating the maximum open files limit for qdrouterd
 ------------------------------------------------------
+
+In deployments using katello-agent infrastructure with a large number of Content Hosts, it may be necessary to increase the maximum open files for qdrouterd.
 
 Calculate the limit for open files in qdrouterd using this formula: `(N x 3) + 100`, where N is the number of content hosts. Each content host may consume up to three file descriptors in the router, and 100 filedescriptors are required to run the router itself.
 
@@ -87,6 +105,8 @@ Note The change must be applied via::
 Calculating the maximum open files limit for qpidd
 --------------------------------------------------
 
+In deployments using katello-agent infrastructure with a large number of Content Hosts, it may be necessary to increase the maximum open files for qpidd.
+
 Calculate the limit for open files in qpidd using this formula: `(N x 4) + 500`, where N is the number of content hosts. A single content host can consume up to four file descriptors and 500 file descriptors are required for the operations of Broker (a component of qpidd).
 
 Add/Update `qpid::open_file_limit` in `/etc/foreman-installer/custom-hiera.yaml` as shown below::
@@ -101,6 +121,8 @@ Note The change must be applied via::
 
 Maximum asynchronous input-output (AIO) requests
 ------------------------------------------------
+
+In deployments using katello-agent infrastructure with a large number of Content Hosts, it may be necessary to increase the maximum allowable concurruent AIO requests.
 
 Increase the maximum number of allowable concurrent AIO requests by increasing the kernel parameter `fs.aio-max-nr`.
 
