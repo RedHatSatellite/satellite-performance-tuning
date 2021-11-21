@@ -17,7 +17,7 @@ Red Hat Enterprise Linux 7 enables the tuned daemon by default during installati
   # tuned-adm profile virtual-guest
 
 Transparent Huge Pages is a memory management technique used by the Linux kernel which reduces the overhead of using Translation Lookaside Buffer (TLB) by using larger sized memory pages. Due to databases having Sparse Memory Access patterns instead of Contiguous Memory access patterns, database workloads often perform poorly when Transparent Huge Pages is enabled.
-To improve performance of MongoDB, Red Hat recommends Transparent Huge Pages be disabled. For details on disabling Transparent Huge Pages, see `Red Hat Solution <https://access.redhat.com/solutions/1320153>`_.
+To improve performance of PostgreSQL, Red Hat recommends Transparent Huge Pages be disabled. In deployments where the PostgreSQL database is running on a separate server, there may be a small benefit to using Transparent Huge Pages on the Satellite server only. For details on disabling Transparent Huge Pages, see `Red Hat Solution <https://access.redhat.com/solutions/1320153>`_.
 
 Apache HTTPD Performance Tuning
 ===============================
