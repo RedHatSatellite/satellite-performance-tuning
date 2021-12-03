@@ -15,18 +15,18 @@ We have measured multiple test cases on multiple Capsule 6.10 configurations:
 |      extra large         |    16    |      46 GB       |
 +--------------------------+----------+------------------+
 
-6.1 Frequent registrations use case
+Frequent registrations use case
 -----------------------------------
 
 For concurrent registrations a bottleneck is CPU speed, but all configs were able to handle even high concurrency without swapping. HW resources used for Capsule have only minimal impact on registration performance. E.g. for capsule with 16 CPUs and 46 GB of RAM we have seen at most 9% of registration speed improvement when compared to a capsule with 4 CPUs and 12 GB RAM.
 
-6.2 Remote execution use case
+Remote execution use case
 -----------------------------
 
 We have tested executing Remote Execution jobs via both SSH and Ansible backend on 500, 2000 and 4000 hosts. All configurations were able to handle all of the tests without errors, except for the smallest configuration (4CPUs and 12 GB memory) which failed to finish on all 4000 hosts.
 In a sync test where we synced RHEL 6, 7, 8 BaseOS and 8 AppStream we have not seen significant differences amongst Capsule configurations. This will be different for syncing a higher number of content views in parallel.
 
-6.3 Content delivery use case
+Content delivery use case
 -----------------------------
 
 In a download test where we concurrently downloaded a 40MB repo of 2000 packages on 100, 200, .. 1000 hosts, we saw roughly 50% improvement in average download duration every time when we doubled Capsule resources. See table below for more concrete numbers..
