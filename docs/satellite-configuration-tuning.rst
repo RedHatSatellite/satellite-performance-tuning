@@ -291,8 +291,6 @@ Dynflow Tuning
 
 Dynflow is the workflow management system and task orchestrator which is built as a plugin inside Foreman and is used to execute the different tasks of Satellite in an out-of-order execution manner. Under the conditions when there are a lot of clients checking in on Satellite and running a number of tasks, the Dynflow can take some help from an added tuning specifying how many executors can it launch.
 
-The following configuration snippet provides more information about the tunings involved related to Dynflow: https://satellite.example.com/foreman_tasks/sidekiq
-
 
 PostgreSQL Tuning
 =================
@@ -338,31 +336,4 @@ Note:
  - Never do any testing on production system and without valid backup.
  - Before you start testing, see how big the database files are. Testing with a really small database would not produce any meaningful results. E.g. if the DB is only 20G and the buffer pool is 32G, it won't show problems with large number of connections because the data will be completely buffered.
 
-
-Capsule Configuration Tuning
-============================
-
-Capsules (called Smart Proxies in upstream Foreman) are meant to offload part of Satellite load related to distributing content to clients but they can also be used to execute Remote Execution jobs. What they can not help with is anything which extensively uses Satellite API as host registration or package profile update.
-
-Initial results
----------------
-
-As of now testing for Capsule tuning recommendations is ongoing, but we are sharing some initial results here already.
-We have measured multiple test cases on multiple Capsule 6.10 configurations:
-
-+--------------------------+----------+------------------+
-| Capsule HW configuration |   CPUs   |    memory        |
-+==========================+==========+==================+
-|      minimal             |    4     |      12 GB       |
-+--------------------------+----------+------------------+
-|      large               |    8     |      24 GB       |
-+--------------------------+----------+------------------+
-|      extra large         |    16    |      46 GB       |
-+--------------------------+----------+------------------+
-
-For concurrent registrations a bottleneck is CPU speed, but all configs were able to handle even high concurrency without swapping.
-
-We have tested executing Remote Execution jobs via both SSH and Ansible backend on 500, 2000 and 4000 hosts. All configurations were able to handle all of the tests without errors, except for the smallest configuration (4CPUs and 12 GB memory) which failed to finish on all 4000 hosts.
-
-In a sync test where we synced RHEL 6, 7, 8 BaseOS and 8 AppStream we have not seen significant differences amongst Capsule configurations. This will be different for syncing a higher number of content views in parallel.
 
