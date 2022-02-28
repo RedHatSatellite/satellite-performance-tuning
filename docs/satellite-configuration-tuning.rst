@@ -291,6 +291,27 @@ Dynflow Tuning
 
 Dynflow is the workflow management system and task orchestrator which is built as a plugin inside Foreman and is used to execute the different tasks of Satellite in an out-of-order execution manner. Under the conditions when there are a lot of clients checking in on Satellite and running a number of tasks, the Dynflow can take some help from an added tuning specifying how many executors can it launch.
 
+Increase sidekiq workers
+========================
+
+From Satellite 6.8, we have a new dynflow service named “dynflow-sidekiq”. It is recommended to increase the sidekiq workers in order to scale the foreman tasking system for bulk concurrent tasks like multiple CV publish/promote , capsule sync etc. There are two options available:
+
+- Increase the number of threads by a dynflow worker (worker's concurrency). This has limited impact for values >5 due to ruby implementation of threads' concurrency.
+
+- Increase the number of workers, which is recommended.
+
+Below examples do increase 1 worker to 3 while remaining 5 threads/concurrency of each::
+
+ satellite-installer --foreman-dynflow-worker-instances 3    # optionally, add --foreman-dynflow-worker-concurrency 5
+
+Then check if there are three worker services::
+
+  systemctl -a | grep dynflow-sidekiq@worker-[0-9]
+  dynflow-sidekiq@worker-1.service                                                                               loaded    active   running   Foreman jobs daemon - worker-1 on sidekiq
+  dynflow-sidekiq@worker-2.service                                                                               loaded    active   running   Foreman jobs daemon - worker-2 on sidekiq
+  dynflow-sidekiq@worker-3.service                                                                               loaded    active   running   Foreman jobs daemon - worker-3 on sidekiq
+
+For more details, see `Red Hat Solution <https://access.redhat.com/solutions/6293741>`_.
 
 PostgreSQL Tuning
 =================
