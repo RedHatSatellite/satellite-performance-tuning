@@ -294,7 +294,9 @@ Dynflow is the workflow management system and task orchestrator which is built a
 Increase sidekiq workers
 ========================
 
-From Satellite 6.8, we have a new dynflow service named “dynflow-sidekiq”. It is recommended to increase the sidekiq workers in order to scale the foreman tasking system for bulk concurrent tasks like multiple CV publish/promote , capsule sync etc. There are two options available:
+From Satellite 6.8, we have a new Dynflow service named “dynflow-sidekiq” that performs tasks scheduled by Dynflow. Sidekiq workers can be grouped into various queues to ensure lots of tasks of one type will not block execution of tasks of other type. 
+
+It is recommended to increase the sidekiq workers in order to scale the foreman tasking system for bulk concurrent tasks like multiple CV publish/promote , capsule sync etc. There are two options available:
 
 - Increase the number of threads by a dynflow worker (worker's concurrency). This has limited impact for values >5 due to ruby implementation of threads' concurrency.
 
@@ -302,14 +304,14 @@ From Satellite 6.8, we have a new dynflow service named “dynflow-sidekiq”. I
 
 Below examples do increase 1 worker to 3 while remaining 5 threads/concurrency of each::
 
- satellite-installer --foreman-dynflow-worker-instances 3    # optionally, add --foreman-dynflow-worker-concurrency 5
+  satellite-installer --foreman-dynflow-worker-instances 3    # optionally, add --foreman-dynflow-worker-concurrency 5
 
 Then check if there are three worker services::
 
   systemctl -a | grep dynflow-sidekiq@worker-[0-9]
-  dynflow-sidekiq@worker-1.service                                                                               loaded    active   running   Foreman jobs daemon - worker-1 on sidekiq
-  dynflow-sidekiq@worker-2.service                                                                               loaded    active   running   Foreman jobs daemon - worker-2 on sidekiq
-  dynflow-sidekiq@worker-3.service                                                                               loaded    active   running   Foreman jobs daemon - worker-3 on sidekiq
+  dynflow-sidekiq@worker-1.service        loaded    active   running   Foreman jobs daemon - worker-1 on sidekiq
+  dynflow-sidekiq@worker-2.service        loaded    active   running   Foreman jobs daemon - worker-2 on sidekiq
+  dynflow-sidekiq@worker-3.service        loaded    active   running   Foreman jobs daemon - worker-3 on sidekiq
 
 For more details, see `Red Hat Solution <https://access.redhat.com/solutions/6293741>`_.
 
