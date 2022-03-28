@@ -6,7 +6,7 @@ Red Hat Satellite as a product comes with a number of components that communicat
 
 .. _applyig-configurations:
 
-Applyig configurations
+Applying configurations
 ======================
 
 In following secrions we suggest various tunables and how to apply them. Please always test changing these in non production environment first, with valid backup and with propper outage window as in most of the cases Satellite restart is required.
@@ -266,7 +266,7 @@ If you decide not to use `Ref :  installer-auto-tuning <https://github.com/RedHa
 
     satellite-installer --foreman-foreman-service-puma-workers=2 --foreman-foreman-service-puma-threads-min=5 --foreman-foreman-service-puma-threads-max=5
 
-When doing any change to your Satellite, always follow : `Ref :  applyig-configurations <https://github.com/RedHatSatellite/satellite-performance-tuning/blob/devel/docs/satellite-configuration-tuning.rst#applyig-configurations>`_ section.
+When doing any change to your Satellite, always follow : `Ref :  applying-configurations <https://github.com/RedHatSatellite/satellite-performance-tuning/blob/devel/docs/satellite-configuration-tuning.rst#applying-configurations>`_ section.
 
 
 Recommendations
