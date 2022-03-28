@@ -262,11 +262,12 @@ For your current setting see this::
 Manual tuning
 -------------
 
-If you decide not to use :ref:`installer-auto-tuning`, you can also apply custom numbers for these tunables. In the example below we are using 2 workers, 5 and 5 threads::
+If you decide not to use `Ref :  installer-auto-tuning <https://github.com/RedHatSatellite/satellite-performance-tuning/blob/devel/docs/satellite-configuration-tuning.rst#installer-auto-tuning>`_, you can also apply custom numbers for these tunables. In the example below we are using 2 workers, 5 and 5 threads::
 
     satellite-installer --foreman-foreman-service-puma-workers=2 --foreman-foreman-service-puma-threads-min=5 --foreman-foreman-service-puma-threads-max=5
 
-When doing any change to your Satellite, always follow :ref:`applyig-configurations` section.
+When doing any change to your Satellite, always follow : `Ref :  applyig-configurations <https://github.com/RedHatSatellite/satellite-performance-tuning/blob/devel/docs/satellite-configuration-tuning.rst#applyig-configurations>`_ section.
+
 
 Recommendations
 ---------------
