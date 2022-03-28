@@ -4,6 +4,15 @@ Satellite Configuration Tuning
 
 Red Hat Satellite as a product comes with a number of components that communicate with each other to produce a final outcome. All these components can be tuned independently of each other to achieve the maximum possible performance for the scenario desired.
 
+.. _applyig-configurations:
+
+Applyig configurations
+======================
+
+In following secrions we suggest various tunables and how to apply them. Please always test changing these in non production environment first, with valid backup and with propper outage window as in most of the cases Satellite restart is required.
+
+It is also a good practice to setup a monitoring before applying any change as it will allow you to evaluate effect of the change. Our testing environment might be too far from what you will see although we are trying hard to mimic real world environment.
+
 Tuned profile
 =============
 
@@ -153,6 +162,8 @@ You might see the following error in journal (use `journalctl` command to access
 This error message appears because qpid maintains management objects for queues, sessions, and connections and recycles them every ten seconds by default. The same object with the same ID is created, deleted, and created again. The old management object is not yet purged, which is why qpid throws this error. Here’s a workaround: lower the mgmt-pub-interval parameter from the default 10seconds to something lower. Add it to /etc/qpid/qpidd.conf and restart the qpidd service.  See also `Bug 1335694 <https://bugzilla.redhat.com/show_bug.cgi?id=1335694>`_ comment 7.
 
 
+.. _puma-tunings:
+
 Puma Tunings
 ============
 
@@ -219,6 +230,8 @@ In 8 CPUs setup, changing the number of workers from 2 to 16, improved concurren
 
 Adding more workers can also help with total registration concurrency Satellite can handle. In our measurements, setups with 2 workers were able to handle up to 480 concurrent registrations, but adding more workers improved the situation.
 
+.. _installer-auto-tuning:
+
 Installer auto-tuning
 ----------------------
 
@@ -245,6 +258,15 @@ For your current setting see this::
   3471 puma: cluster worker 1: 3385 [foreman]
   3477 puma: cluster worker 2: 3385 [foreman]
   [...]
+
+Manual tuning
+-------------
+
+If you decide not to use :ref:`installer-auto-tuning`, you can also apply custom numbers for these tunables. In the example below we are using 2 workers, 5 and 5 threads::
+
+    satellite-installer --foreman-foreman-service-puma-workers=2 --foreman-foreman-service-puma-threads-min=5 --foreman-foreman-service-puma-threads-max=5
+
+When doing any change to your Satellite, always follow :ref:`applyig-configurations` section.
 
 Recommendations
 ---------------

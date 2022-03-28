@@ -38,7 +38,7 @@ Instructions for use:
 
 1. Determine the profile you wish to use
 2. Run `satellite-installer --tuning large`. This will apply to the chosen tuning profile.
-3. The Ruby app server will need to be tuned directly via the Puma Tuning section: :ref:`puma_tuning`.
+3. The Ruby app server will need to be tuned directly via the Puma Tuning section: :ref:`puma-tunings`.
 4. Resume operations
 
 NOTE: 
