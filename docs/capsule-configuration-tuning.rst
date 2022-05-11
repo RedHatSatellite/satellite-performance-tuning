@@ -39,7 +39,7 @@ Remote execution use case
 
 We have tested executing Remote Execution jobs via both SSH and Ansible backend on 500, 2000 and 4000 hosts. All configurations were able to handle all of the tests without errors, except for the smallest configuration (4CPUs and 12 GB memory) which failed to finish on all 4000 hosts.
 
-In a sync test where we synced RHEL 6, 7, 8 BaseOS and 8 AppStream we have not seen significant differences amongst Capsule configurations. This will be different for syncing a higher number of content views in parallel.
+In a sync test where we synced RHEL 6, 7, 8 BaseOS and 8 AppStream we have not seen significant differences among Capsule configurations. This will be different for syncing a higher number of content views in parallel.
 
 
 

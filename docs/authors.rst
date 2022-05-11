@@ -12,4 +12,4 @@ Eric Helms  <ehelms@redhat.com>
 
 Imaanpreet Kaur <ikaur@redhat.com>
 
-Ishan Singal <isinghal@redhat.com>
+Ishan Singhal <isinghal@redhat.com>

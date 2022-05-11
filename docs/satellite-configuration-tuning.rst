@@ -10,7 +10,7 @@ Red Hat Satellite as a product comes with a number of components that communicat
 Applying configurations
 =======================
 
-In following secrions we suggest various tunables and how to apply them. Please always test changing these in non production environment first, with valid backup and with propper outage window as in most of the cases Satellite restart is required.
+In following sections we suggest various tunables and how to apply them. Please always test changing these in non production environment first, with valid backup and with proper outage window as in most of the cases Satellite restart is required.
 
 It is also a good practice to setup a monitoring before applying any change as it will allow you to evaluate effect of the change. Our testing environment might be too far from what you will see although we are trying hard to mimic real world environment.
 
@@ -80,7 +80,7 @@ Amidst httpd running out of processes to handle the incoming connections can als
 
 Based on your expected peak load, you might want to modify the configuration of apache prefork to enable it to handle more concurrent requests.
 
-An example modification to the prefork configuration for a server which may desire to handle 150 concurrent content host registrations to Satellite may look like the configuration file example that follows (see how to use `custom-hiera.yaml` file; this will modify config file /etc/httpd/conf.modules.d/prefork.conf)::
+An example modification to the prefork configuration for a server which may desire to handle 150 concurrent content host registrations to Satellite may look like the configuration file example that follows (see how to use `custom-hiera.yaml` file; this will modify file /etc/httpd/conf.modules.d/prefork.conf)::
 
   File: /etc/foreman-installer/custom-hiera.yaml
   apache::mod::prefork::serverlimit: 582
@@ -97,7 +97,7 @@ The StartServers parameter defines how many server processes will be launched by
 Increasing the MaxOpenFiles Limit
 ---------------------------------
 
-With the tuning in place, apache httpd can easily open a lot of file descriptors on the server which may exceed the default limit of most of the linux systems in place. To avoid any kind of issues that may arise as a result of exceeding max open files limit on the system, please create the following file and directory and set the contents of the file as specified in the below given example::
+With the tuning in place, apache httpd can easily open a lot of file descriptors on the server which may exceed the default limit of most of the Linux systems in place. To avoid any kind of issues that may arise as a result of exceeding max open files limit on the system, please create the following file and directory and set the contents of the file as specified in the below given example::
 
   File: /etc/systemd/system/httpd.service.d/limits.conf
   [Service]
@@ -135,7 +135,7 @@ Calculating the maximum open files limit for qdrouterd
 
 In deployments using katello-agent infrastructure with a large number of Content Hosts, it may be necessary to increase the maximum open files for qdrouterd.
 
-Calculate the limit for open files in qdrouterd using this formula: `(N x 3) + 100`, where N is the number of content hosts. Each content host may consume up to three file descriptors in the router, and 100 filedescriptors are required to run the router itself.
+Calculate the limit for open files in qdrouterd using this formula: `(N x 3) + 100`, where N is the number of content hosts. Each content host may consume up to three file descriptors in the router, and 100 file descriptors are required to run the router itself.
 
 The following settings permit Satellite to scale up to 10,000 content hosts.
 
@@ -163,7 +163,7 @@ To apply the change, follow: `Applying configurations`_ section.
 Maximum asynchronous input-output (AIO) requests
 ------------------------------------------------
 
-In deployments using katello-agent infrastructure with a large number of Content Hosts, it may be necessary to increase the maximum allowable concurruent AIO requests.
+In deployments using katello-agent infrastructure with a large number of Content Hosts, it may be necessary to increase the maximum allowable concurrent AIO requests.
 
 Increase the maximum number of allowable concurrent AIO requests by increasing the kernel parameter `fs.aio-max-nr`.
 
@@ -241,7 +241,7 @@ For example, we have compared these two setups:
 | --foreman-foreman-service-puma-workers=2      | --foreman-foreman-service-puma-workers=4      |
 +-----------------------------------------------+-----------------------------------------------+
 
-In the second case with more workers but the same total number of threads, we have seen about 11% of speedup in highly concurrent registrations scenario. Moreover, adding more workers did not consume more cpu and memory but will get more performance.
+In the second case with more workers but the same total number of threads, we have seen about 11% of speedup in highly concurrent registrations scenario. Moreover, adding more workers did not consume more CPU and memory but will get more performance.
 
 
 Setting right number of workers for different number of CPUs
@@ -273,7 +273,7 @@ If the user does not provide any Puma workers and thread values via installer co
 
  min(CPU * 1.5, RAM_IN_GB - 1.5)
 
-which is too much wrt. memory - there have been cases where too many workers triggered OOM on Satellite.
+which is too much in regards of memory - there have been cases where too many workers triggered OOM on Satellite.
 
 This should be fine for most cases, but with some usage patterns tuning is needed to either limit the amount of resources dedicated to Puma (so other Satellite components can use these) or for any other reason. Each Puma worker consumes around 1 GB of RAM.
 
@@ -339,7 +339,7 @@ Reasoning behind these numbers
 
 Tuning number of workers is the more important aspect here and in some case we have seen up to 52% performance increase. Although installer uses 5 min/max threads by default, we recommend 16 threads in with all the tuning profiles in the table above. That is because we have seen up to 23% performance increase with 16 threads (14% for 8 compared and 10% for 32 compared) when compared to setup with 4 threads.
 
-To get these numbers we used concurrent registrations test case which is a very specific use-case. It can be different on your Satellite which might have more balanced use-case (not only registrations). Keeping default 5 min/max threads is a good choise as well.
+To get these numbers we used concurrent registrations test case which is a very specific use-case. It can be different on your Satellite which might have more balanced use-case (not only registrations). Keeping default 5 min/max threads is a good choice as well.
 
 These are our some measurements that lead us to these recommendations:
 
@@ -384,14 +384,14 @@ You can get some insight into current state of Sidekiq by accessing this endpoin
   https://satellite.example.com/foreman_tasks/sidekiq
 
 
-Increase sidekiq workers
-------------------------
+Increase number of Sidekiq workers
+-----------------------------------
 
 From Satellite 6.8, we have a new Dynflow service named “dynflow-sidekiq” that performs tasks scheduled by Dynflow. Sidekiq workers can be grouped into various queues to ensure lots of tasks of one type will not block execution of tasks of other type.
 
-It is recommended to increase the sidekiq workers in order to scale the foreman tasking system for bulk concurrent tasks like multiple CV publish/promote , capsule sync etc. There are two options available:
+It is recommended to increase number of Sidekiq workers in order to scale the foreman tasking system for bulk concurrent tasks like multiple CV publish/promote , capsule sync etc. There are two options available:
 
-- Increase the number of threads by a dynflow worker (worker's concurrency). This has limited impact for values >5 due to ruby implementation of threads' concurrency.
+- Increase the number of threads used by a worker (worker's concurrency). This has limited impact for values >5 due to ruby implementation of threads' concurrency.
 
 - Increase the number of workers, which is recommended.
 
@@ -427,13 +427,13 @@ In the above tuning configuration, there are a certain set of keys which we have
 
 `max_connections`: The key defines the maximum number of connections that can be accepted by the PostgreSQL processes that are running. An optimal value for the parameter will be equal to the nearest multiple of 100 of the ServerLimit value of Apache httpd2 multiplied by 2. For example, if ServerLimit is set to 582, we can set the max_connections to 1000.
 
-`shared_buffers`: The shared buffers define the memory used by all the active connections inside postgresql to store the data for the different database operations. An optimal value for this will vary between 2 GB to a maximum of 25% of your total system memory depending upon the frequency of the operations being conducted on Satellite.
+`shared_buffers`: The shared buffers define the memory used by all the active connections inside PostgreSQL to store the data for the different database operations. An optimal value for this will vary between 2 GB to a maximum of 25% of your total system memory depending upon the frequency of the operations being conducted on Satellite.
 
-`work_mem`: The work_mem is the memory that is allocated on per process basis for Postgresql and is used to store the intermediate results of the operations that are being performed by the process. Setting this value to 8 MB should be more than enough for most of the intensive operations on Satellite.
+`work_mem`: The work_mem is the memory that is allocated on per process basis for PostgreSQL and is used to store the intermediate results of the operations that are being performed by the process. Setting this value to 8 MB should be more than enough for most of the intensive operations on Satellite.
 
 `autovacuum_vacuum_cost_limit`: The key defines the cost limit value for the vacuuming operation inside the autovacuum process to clean up the dead tuples inside the database relations. The cost limit defines the number of tuples that can be processed in a single run by the process. An optimal value for this is 2000 based on the general load that Satellite pushes on the PostgreSQL server process.
 
-Note - With the upgrade to Postgres 12, ‘checkpoint_segments’ configuration is not supported. For more details, please refer to this `bugzilla <https://bugzilla.redhat.com/show_bug.cgi?id=1867311#c12>`_ .
+Note - With the upgrade to PostgreSQL 12, ‘checkpoint_segments’ configuration is not supported. For more details, please refer to this `bugzilla <https://bugzilla.redhat.com/show_bug.cgi?id=1867311#c12>`_ .
 
 
 Benchmarking raw DB performance

@@ -36,12 +36,9 @@ There are 4 sizes provided based on estimates of the number of managed hosts you
 
 Instructions for use:
 
-1. Determine the profile you wish to use
+1. Determine the profile you wish to use.
 2. Run `satellite-installer --tuning large`. This will apply to the chosen tuning profile.
-3. The Ruby app server will need to be tuned directly via the Puma Tuning section: :ref:`puma-tunings`.
-4. Resume operations
+3. The Ruby app server will need to be tuned directly via Puma Tunings section.
+4. Resume operations.
 
-NOTE: 
-
-1.The specific tuning settings for each profile can be viewed in the configuration files contained in `/usr/share/foreman-installer/config/foreman.hiera/tuning/sizes`
-
+The specific tuning settings for each profile can be viewed in the configuration files contained in `/usr/share/foreman-installer/config/foreman.hiera/tuning/sizes`

@@ -1,5 +1,5 @@
 Satellite 6.10 Performance Tuning Guide
-======================================
+=======================================
 
 .. toctree::
    :maxdepth: 2
@@ -13,6 +13,4 @@ Satellite 6.10 Performance Tuning Guide
    top-performance-considerations
    configuring-environment
    satellite-configuration-tuning
-
-
-
+   capsule-configuration-tuning
