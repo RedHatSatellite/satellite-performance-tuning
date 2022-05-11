@@ -6,12 +6,46 @@ Red Hat Satellite as a product comes with a number of components that communicat
 
 .. _applyig-configurations:
 
+
 Applying configurations
-======================
+=======================
 
 In following secrions we suggest various tunables and how to apply them. Please always test changing these in non production environment first, with valid backup and with propper outage window as in most of the cases Satellite restart is required.
 
 It is also a good practice to setup a monitoring before applying any change as it will allow you to evaluate effect of the change. Our testing environment might be too far from what you will see although we are trying hard to mimic real world environment.
+
+If you have changed some SystemD service file, you need to notify SystemD daemon to reload the configuration::
+
+  # systemctl daemon-reload
+
+Note this will still need to reload the service to do the actual change. It is best to restart whole Satellite::
+
+  # satellite-maintain service restart
+
+If you have changed some configuration file like `/etc/foreman-installer/custom-hiera.yaml` you need to rerun installer to apply the changes::
+
+  # satellite-installer
+
+Also you might want to rerun installer with some new option, so you can::
+
+  # satellite-installer <new options>
+
+After any change, please run this quick Satellite health-check::
+
+  # satellite-maintain health check
+  Running ForemanMaintain::Scenario::FilteredScenario
+  ================================================================================
+  Check number of fact names in database:                               [OK]
+  --------------------------------------------------------------------------------
+  Check whether all services are running:                               [OK]
+  --------------------------------------------------------------------------------
+  Check whether all services are running using the ping call:           [OK]
+  --------------------------------------------------------------------------------
+  Check for paused tasks:                                               [OK]
+  --------------------------------------------------------------------------------
+  Check whether system is self-registered or not:                       [OK]
+  --------------------------------------------------------------------------------
+
 
 Tuned profile
 =============
@@ -28,10 +62,12 @@ Red Hat Enterprise Linux 7 enables the tuned daemon by default during installati
 Transparent Huge Pages is a memory management technique used by the Linux kernel which reduces the overhead of using Translation Lookaside Buffer (TLB) by using larger sized memory pages. Due to databases having Sparse Memory Access patterns instead of Contiguous Memory access patterns, database workloads often perform poorly when Transparent Huge Pages is enabled.
 To improve performance of PostgreSQL, Red Hat recommends Transparent Huge Pages be disabled. In deployments where the PostgreSQL database is running on a separate server, there may be a small benefit to using Transparent Huge Pages on the Satellite server only. For details on disabling Transparent Huge Pages, see `Red Hat Solution <https://access.redhat.com/solutions/1320153>`_.
 
+
 Apache HTTPD Performance Tuning
 ===============================
 
 Apache httpd forms a core part of the Satellite and acts as a web server for handling the requests that are being made through the Satellite Web UI or exposed APIs. To increase the concurrency of the operations, httpd forms the first point where tuning can help to boost the performance of the Satellite.
+
 
 Configuring how many processes can be launched by Apache httpd
 --------------------------------------------------------------
@@ -76,21 +112,23 @@ Once the file has been edited, the following commands need to be run to make the
 qdrouterd and qpid tunings
 ==========================
 
+
 Disabling Katello Agent Infrastructure on Satellite 6.10+
 ---------------------------------------------------------
 
 Katello-agent infrastructure is used to push package updates to Content Hosts from Satellite. This uses Apache Qpid and Qpid Dispatch Router (qdrouterd) for messaging between Satellite, Capsules, and Content Hosts. Starting with Satellite 6.10, Katello Agent Infrastructure is optional and disabled by default for new installations. For Satellite deployments upgraded from prior versions, it will remain enabled upon upgrade; however if this feature is not being used, it is recommended to disable it to conserve hardware resources on Satellite and Capsule servers.
 
-To disable and remove katello-agent infrastructure on (upgraded) Satellite or Capsule 6.10+, run the command:
+To disable and remove katello-agent infrastructure on (upgraded) Satellite or Capsule 6.10+, run the command::
 
-  `satellite-installer --foreman-proxy-content-enable-katello-agent false`
+  # satellite-installer --foreman-proxy-content-enable-katello-agent false
 
 If katello-agent was previously deployed on a Content Host but is no longer desired, it can be completely removed. Before proceeding, check that the gofer package and service is not required by any application other than katello-agent. Once it is confirmed that gofer is not needed, you may then remove katello-agent and gofer using the commands:
 
-  `systemctl disable --now goferd`
-  `yum remove katello-agent gofer`
+  # systemctl disable --now goferd
+  # yum remove katello-agent gofer
 
 The remainder of this section describes tuning and large deployment considerations for users who wish to continue using katello-agent infrastructure with Satellite.
+
 
 Calculating the maximum open files limit for qdrouterd
 ------------------------------------------------------
@@ -105,11 +143,8 @@ Add/Update `qpid::router::open_file_limit` in `/etc/foreman-installer/custom-hie
 
   qpid::router::open_file_limit: 150100
 
-Note The change must be applied via::
+To apply the change, follow: `Applying configurations`_ section.
 
-  # satellite-installer
-  # systemctl daemon-reload
-  # foreman-maintain service restart
 
 Calculating the maximum open files limit for qpidd
 --------------------------------------------------
@@ -122,11 +157,8 @@ Add/Update `qpid::open_file_limit` in `/etc/foreman-installer/custom-hiera.yaml`
 
   qpid::open_file_limit: 65536
 
-Note The change must be applied via::
+To apply the change, follow: `Applying configurations`_ section.
 
-  # satellite-installer
-  # systemctl daemon-reload
-  # foreman-maintain service restart
 
 Maximum asynchronous input-output (AIO) requests
 ------------------------------------------------
@@ -147,10 +179,12 @@ This number should be bigger than 33 multiplied by the maximum number of the con
 
 Rebooting the machine also ensures that this change is applied.
 
+
 Storage Considerations
 ----------------------
 
 Plan to have enough storage capacity for directory `/var/lib/qpidd` in advance when you are planning an installation that will use katello-agent extensively. In Red Hat Satellite 6, `/var/lib/qpidd` requires 2MB disk space per content host. See this `bug <https://bugzilla.redhat.com/show_bug.cgi?id=1366323>`_ for more details.
+
 
 mgmt-pub-interval setting
 -------------------------
@@ -162,14 +196,13 @@ You might see the following error in journal (use `journalctl` command to access
 This error message appears because qpid maintains management objects for queues, sessions, and connections and recycles them every ten seconds by default. The same object with the same ID is created, deleted, and created again. The old management object is not yet purged, which is why qpid throws this error. Here’s a workaround: lower the mgmt-pub-interval parameter from the default 10seconds to something lower. Add it to /etc/qpid/qpidd.conf and restart the qpidd service.  See also `Bug 1335694 <https://bugzilla.redhat.com/show_bug.cgi?id=1335694>`_ comment 7.
 
 
-.. _puma-tunings:
-
 Puma Tunings
 ============
 
 Puma is a ruby application server which is used for serving the Foreman related requests to the clients.
 
 For any Satellite configuration that is supposed to handle a large number of clients or frequent operations, it is important for the Puma to be tuned appropriately.
+
 
 Threads min effects
 -------------------
@@ -190,6 +223,7 @@ For example, we have compared these two setups:
 
 When we tune the puma server with t_min=16 puma will consume about 12% less memory as compared to t_min=0.
 
+
 Setting threads min, max & workers
 ----------------------------------
 
@@ -208,6 +242,7 @@ For example, we have compared these two setups:
 +-----------------------------------------------+-----------------------------------------------+
 
 In the second case with more workers but the same total number of threads, we have seen about 11% of speedup in highly concurrent registrations scenario. Moreover, adding more workers did not consume more cpu and memory but will get more performance.
+
 
 Setting right number of workers for different number of CPUs
 -------------------------------------------------------------
@@ -230,14 +265,13 @@ In 8 CPUs setup, changing the number of workers from 2 to 16, improved concurren
 
 Adding more workers can also help with total registration concurrency Satellite can handle. In our measurements, setups with 2 workers were able to handle up to 480 concurrent registrations, but adding more workers improved the situation.
 
-.. _installer-auto-tuning:
 
 Installer auto-tuning
 ----------------------
 
 If the user does not provide any Puma workers and thread values via installer command line (or they are not present in the Satellite configuration), the installer tries to do its best to configure a balanced number of workers. It follows this formula::
 
- min(CPU*1.5, RAM_IN_GB - 1.5)
+ min(CPU * 1.5, RAM_IN_GB - 1.5)
 
 which is too much wrt. memory - there have been cases where too many workers triggered OOM on Satellite.
 
@@ -259,14 +293,23 @@ For your current setting see this::
   3477 puma: cluster worker 2: 3385 [foreman]
   [...]
 
+
 Manual tuning
 -------------
 
-If you decide not to use `Ref :  installer-auto-tuning <https://github.com/RedHatSatellite/satellite-performance-tuning/blob/devel/docs/satellite-configuration-tuning.rst#installer-auto-tuning>`_, you can also apply custom numbers for these tunables. In the example below we are using 2 workers, 5 and 5 threads::
+If you decide not to use `Installer auto-tuning`_, you can apply custom numbers for these tunables. In the example below we are using 2 workers, 5 and 5 threads::
 
     satellite-installer --foreman-foreman-service-puma-workers=2 --foreman-foreman-service-puma-threads-min=5 --foreman-foreman-service-puma-threads-max=5
 
-When doing any change to your Satellite, always follow : `Ref :  applying-configurations <https://github.com/RedHatSatellite/satellite-performance-tuning/blob/devel/docs/satellite-configuration-tuning.rst#applying-configurations>`_ section.
+When doing any change to your Satellite, always follow: `Applying configurations`_ section.
+
+
+Setting db-pool
+---------------
+
+The effective value of $db_pool will be automatically set to equal $foreman::foreman_service_puma_threads_max. It will be the maximum of $foreman::db_pool and $foreman::foreman_service_puma_threads_max but both have default value 5, so any increase to the max threads above 5 will automatically increase the database connection pool by the same amount
+
+For details of how that is implemented, `check set DB pool size dynamically.  <https://github.com/theforeman/puppet-foreman/commit/026d47434316b8ae318c5e42936edc12859ab475>`_
 
 
 Recommendations
@@ -290,16 +333,15 @@ As of now our recommendation is based purely on concurrent registration performa
 |      large         |   60000+                   |    256G+ |   48+     |   16                                          |   20-26                      |
 +--------------------+----------------------------+----------+-----------+-----------------------------------------------+------------------------------+
 
-foreman-db-pool
----------------
 
-The effective value of $db_pool will be automatically set to equal $foreman::foreman_service_puma_threads_max. It will be the maximum of $foreman::db_pool and $foreman::foreman_service_puma_threads_max but both have default value 5, so any increase to the max threads above 5 will automatically increase the database connection pool by the same amount
+Reasoning behind these numbers
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-For details of how that is implemented, `check set DB pool size dynamically.  <https://github.com/theforeman/puppet-foreman/commit/026d47434316b8ae318c5e42936edc12859ab475>`_
+Tuning number of workers is the more important aspect here and in some case we have seen up to 52% performance increase. Although installer uses 5 min/max threads by default, we recommend 16 threads in with all the tuning profiles in the table above. That is because we have seen up to 23% performance increase with 16 threads (14% for 8 compared and 10% for 32 compared) when compared to setup with 4 threads.
 
-Reasoning behind these numbers:
+To get these numbers we used concurrent registrations test case which is a very specific use-case. It can be different on your Satellite which might have more balanced use-case (not only registrations). Keeping default 5 min/max threads is a good choise as well.
 
-Use 16 threads with all the tuning profiles - we have seen up to 23% performance increase with 16 threads when compared to 5 threads (14% for 8 compared to 4 and 10% for 32 compared to 4) - see table below:
+These are our some measurements that lead us to these recommendations:
 
 +--------------------+----------------------------+---------------------------+----------------------------+-----------------------------+
 |                    |   4 workers, 4 threads     |    4 workers, 8 threads   |   4 workers, 16 threads    |   4 workers, 32 threads     |  
@@ -331,15 +373,21 @@ Use 16 - 24 workers on a 32 CPUs setup (this was tested on a 90 GB RAM machine a
 |      Improvement   |   0%                       |    37%                    |   44%                      |   52%                       |  too many failures          |  too many failures          |
 +--------------------+----------------------------+---------------------------+----------------------------+-----------------------------+-----------------------------+-----------------------------+
 
-Dynflow Tuning
-==============
+
+Dynflow & Sidekiq Tuning
+========================
 
 Dynflow is the workflow management system and task orchestrator which is built as a plugin inside Foreman and is used to execute the different tasks of Satellite in an out-of-order execution manner. Under the conditions when there are a lot of clients checking in on Satellite and running a number of tasks, the Dynflow can take some help from an added tuning specifying how many executors can it launch.
 
-Increase sidekiq workers
-========================
+You can get some insight into current state of Sidekiq by accessing this endpoint on your Satellite::
 
-From Satellite 6.8, we have a new Dynflow service named “dynflow-sidekiq” that performs tasks scheduled by Dynflow. Sidekiq workers can be grouped into various queues to ensure lots of tasks of one type will not block execution of tasks of other type. 
+  https://satellite.example.com/foreman_tasks/sidekiq
+
+
+Increase sidekiq workers
+------------------------
+
+From Satellite 6.8, we have a new Dynflow service named “dynflow-sidekiq” that performs tasks scheduled by Dynflow. Sidekiq workers can be grouped into various queues to ensure lots of tasks of one type will not block execution of tasks of other type.
 
 It is recommended to increase the sidekiq workers in order to scale the foreman tasking system for bulk concurrent tasks like multiple CV publish/promote , capsule sync etc. There are two options available:
 
@@ -359,6 +407,7 @@ Then check if there are three worker services::
   dynflow-sidekiq@worker-3.service        loaded    active   running   Foreman jobs daemon - worker-3 on sidekiq
 
 For more details, see `Red Hat Solution <https://access.redhat.com/solutions/6293741>`_.
+
 
 PostgreSQL Tuning
 =================
@@ -386,6 +435,7 @@ In the above tuning configuration, there are a certain set of keys which we have
 
 Note - With the upgrade to Postgres 12, ‘checkpoint_segments’ configuration is not supported. For more details, please refer to this `bugzilla <https://bugzilla.redhat.com/show_bug.cgi?id=1867311#c12>`_ .
 
+
 Benchmarking raw DB performance
 -------------------------------
 
@@ -399,9 +449,7 @@ Choice of filesystem for PostgreSQL data directory might matter as well:
 
  - https://blog.pgaddict.com/posts/postgresql-performance-on-ext4-and-xfs
 
-Note:
+Notes:
 
  - Never do any testing on production system and without valid backup.
  - Before you start testing, see how big the database files are. Testing with a really small database would not produce any meaningful results. E.g. if the DB is only 20G and the buffer pool is 32G, it won't show problems with large number of connections because the data will be completely buffered.
-
-
