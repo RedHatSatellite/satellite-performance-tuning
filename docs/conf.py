@@ -54,3 +54,9 @@ html_static_path = ['_static']
 
 spelling_word_list_filename = '../spelling_wordlist.txt'
 spelling_show_suggestions = True
+
+highlight_language = 'none'
+
+latex_elements = {
+    'sphinxsetup': 'TitleColor={rgb}{0.737,0,0}, InnerLinkColor={rgb}{0.560,0,0}, OuterLinkColor={rgb}{0.560,0,0}',
+}
