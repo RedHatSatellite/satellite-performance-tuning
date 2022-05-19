@@ -1,30 +1,4 @@
-Satellite 6 performance tuning guide
-====================================
+Satellite 6 performance tuning guide has moved
+==============================================
 
-Satellite 6 performance tuning guide
-
-Contribute
-==========
-
-Setup your environment:
-
-    sudo dnf -y install python-sphinx-latex latexmk xpdf # to install all dependencies
-    python -m venv venv
-    source venv/bin/activate
-    python -m pip install -r requirements.txt
-
-After changes, check spelling (use `spelling_wordlist.txt` to whitelist):
-
-    make -C docs/ spelling
-
-Build PDF:
-
-    make -C docs/ latexpdf
-
-View PDF:
-
-    xpdf docs/_build/latex/satellite6performancetuningguide.pdf
-
-Cleanup workdir:
-
-    make -C docs/ clean
+Satellite 6 performance tuning guide was migrated into the upstream documentation in issue [#33](https://github.com/RedHatSatellite/satellite-performance-tuning/issues/33). New link is [Performance Tuning Guide](https://docs.theforeman.org/nightly/Performance_Tuning_Guide/index-foreman-el.html). All changes should go into [foreman-documentation](https://github.com/theforeman/foreman-documentation/) git repo.
